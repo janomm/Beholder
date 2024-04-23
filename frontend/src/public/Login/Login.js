@@ -11,25 +11,29 @@ function Login() {
     const [error, setError] = useState('');
 
     function onChangeInput(event) {
-        if(event.target.value.id === 'email'){
+        if(event.target.id === 'email'){
             setEmail(event.target.value);
+            console.log(email);
         } else {
             setPassword(event.target.value);    
         }
+        
     }
     
     function onSubmit(event) {
         event.preventDefault();
         
-        //const isValid = 
-        doLogin(email, password).then(isValid =>{
-            if (isValid) {
-                history.push('/settings');
-            }
-            
-        }).catch(err => {
-            setError(err);
-        });
+        doLogin(email,password)
+            .then(response =>{
+                if(response){
+                    localStorage.setItem("token",response.token);
+                    history.push('/settings');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                setError(`Invalid user and/or password!`);
+            })
     }
 
     return (
@@ -48,7 +52,7 @@ function Login() {
                             <div className="text-center text-md-center mb-4 mt-md-0">
                                 <h1 className="mb-0 h3">Sign in to our platform</h1>
                             </div>
-                            <form action="#" className="mt-4">
+                            <form action="#" className="mt-4" onSubmit={onSubmit}>
                                 <div className="form-group mb-4">
                                     <label htmlFor="email">Your Email</label>
                                     <div className="input-group">
@@ -83,7 +87,7 @@ function Login() {
                                 </div>
 
                                 <div className="d-grid">
-                                    <button type="submit" className="btn btn-gray-800" onSubmit={onSubmit} >Sign In</button>
+                                    <button type="submit" className="btn btn-gray-800">Sign In</button>
                                 </div>
                                 {
                                     error ? 
