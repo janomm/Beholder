@@ -6,7 +6,8 @@ const sequelize = new Sequelize(
     process.env.DB_PWD,
     {
         dialect: process.env.DB_DIALECT,
-        host: process.env.DB_HOST
+        host: process.env.DB_HOST,
+        logging: true
     });
 
     module.exports = sequelize;
