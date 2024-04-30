@@ -15,6 +15,7 @@ module.exports = {
         email: 'contato@julliano.com.br',
         password: bcrypt.hashSync('123456'),
         apiUrl: 'https://testnet.binance.vision/api/',
+        streamUrl: 'https://testnet.binance.vision/api/',
         accessKey: 'JxdmPdZjdlp8vpqOwr7Bltauzh5BlBBuwyMhjRp4CLVYeXYR1ApWi5Bddu10Rixi',
         secretKey: crypto.encrypt('8lzycRu2lME2Pl2QiQmcArStUZXO2MYhuOpQPimacfduh34Aj4Rx3Ecav87GrPHE'),
         createdAt: new Date(),
