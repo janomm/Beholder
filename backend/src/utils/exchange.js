@@ -3,18 +3,6 @@ const Binance = require('node-binance-api');
 module.exports = (settings) => {
     if (!settings) throw new Error('The settings object is required to connect on exchange.');
 
-    console.log(
-        {
-            APIKEY: settings.accessKey,
-            APISECRET: settings.secretKey,
-            family: 0,
-            urls: {
-                base: settings.apiUrl.endsWith('/') ? settings.apiUrl : settings.apiUrl + '/',
-                stream: settings.streamUrl.endsWith('/') ? settings.streamUrl : settings.streamUrl + '/'
-            }
-        }
-    );
-
     const binance = new Binance({
         APIKEY: settings.accessKey,
         APISECRET: settings.secretKey,
