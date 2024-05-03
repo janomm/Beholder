@@ -6,6 +6,7 @@ import "../Dashboard";
 /**
  * props:
  * - data
+ * - onUpdate
 */
 function Wallet(props) {
 
@@ -25,6 +26,8 @@ function Wallet(props) {
                         onOrder: item[1].onOrder
                     }
                 })
+
+                if (props.onUpdate) props.onUpdate(balances);
                 setBalances(balances);
             })
             .catch(err => {
@@ -56,11 +59,11 @@ function Wallet(props) {
                         </thead>
                         <tbody>
                             {
-                                balances.map(item => 
+                                balances.map(item =>
                                     <tr key={`wallet${item.symbol}`}>
                                         <td className="text-gray-900">{item.symbol}</td>
-                                        <td className="text-gray-900">{item.available.substring(0,8)}</td>
-                                        <td className="text-gray-900">{item.onOrder.substring(0,8)}</td>
+                                        <td className="text-gray-900">{item.available.substring(0, 8)}</td>
+                                        <td className="text-gray-900">{item.onOrder.substring(0, 8)}</td>
                                     </tr>
                                 )
                             }
