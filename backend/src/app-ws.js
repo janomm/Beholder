@@ -34,7 +34,7 @@ function verifyClient(info, callback){
             if(decoded && !authController.isBlackListed(token))
                 return callback(true);
         } catch (err){
-            console.err(token,err);
+            console.error(token,err);
         }
     }
     return callback(false,401)
