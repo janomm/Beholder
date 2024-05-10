@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import useWebSocket from 'react-use-websocket';
 import Menu from '../../components/Menu/Menu';
 import MiniTicker from './MiniTicker/MiniTicker';
@@ -10,16 +11,22 @@ import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 
 function Dashboard() {
 
+    const history = useHistory();
+
     const [miniTickerState, setMiniTickerState] = useState({});
 
     const [bookState, setBookState] = useState({});
 
     const [balanceState, setBalanceState] = useState({});
 
-    const [wallet,setWallet] = useState({});
+    const [wallet, setWallet] = useState({});
 
-    function onWalletUpdate(walletObj){
+    function onWalletUpdate(walletObj) {
         setWallet(walletObj);
+    }
+
+    function onOrderSubmit(order) {
+        history.push('/orders/' + order.symbol);
     }
 
     const { lastJsonMessage } = useWebSocket(process.env.REACT_APP_WS_URL, {
@@ -31,7 +38,7 @@ function Dashboard() {
                     lastJsonMessage.book.forEach(b => bookState[b.symbol] = b)
                     setBookState(bookState);
                 }
-                if(lastJsonMessage.balance) setBalanceState(lastJsonMessage.balance);
+                if (lastJsonMessage.balance) setBalanceState(lastJsonMessage.balance);
             }
         },
         queryParams: { 'token': localStorage.getItem("token") },
@@ -55,14 +62,14 @@ function Dashboard() {
                         <NewOrderButton />
                     </div>
                 </div>
-                <CandleChart symbol="BTCUSD" />
+                <CandleChart symbol="BTCBRL" />
                 <MiniTicker data={miniTickerState} />
                 <div className='row'>
                     <BookTicker data={bookState} />
-                    <Wallet data={balanceState} onUpdate={onWalletUpdate}/>
+                    <Wallet data={balanceState} onUpdate={onWalletUpdate} />
                 </div>
             </main>
-            <NewOrderModal wallet={wallet} />
+            <NewOrderModal wallet={wallet} onSubmit={onOrderSubmit} />
         </React.Fragment>
     );
 }

@@ -8,7 +8,13 @@ import OrderType from './OrderType';
 import QuantityInput from './QuantityInput';
 import { STOP_TYPES } from '../../services/ExchangeServices';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { placeOrder } from '../../services/OrdersService';
 
+/***
+ * props:
+ * - wallet
+ * - onSubmit
+ */
 function NewOrderModal(props) {
 
     const btnClose = useRef('');
@@ -34,6 +40,20 @@ function NewOrderModal(props) {
 
     function onSubmit(event) {
         event.preventDefault();
+        const token = localStorage.getItem('token');
+        placeOrder(order, token)
+            .then(result => {
+
+                btnClose.current.click();
+                if (props.onSubmit) props.onSubmit(result);
+            })
+            .catch(err => {
+                if (err.response && err.response.status === 401) {
+                    btnClose.current.click();
+                    return history.push('/');
+                }
+                console.error(err.message);
+            })
     }
 
     function onInputChange(event) {
@@ -132,10 +152,10 @@ function NewOrderModal(props) {
             else
                 inputTotal.current.value = `${quantity * parseFloat(book.bid)}`.substring(0, 8);
 
-                if(parseFloat(inputTotal.current.value) < order.minNotional){
-                    btnSend.current.disabled = false;
-                    return setError('Min Notional: ' + order.minNotional);
-                }
+            if (parseFloat(inputTotal.current.value) < order.minNotional) {
+                btnSend.current.disabled = false;
+                return setError('Min Notional: ' + order.minNotional);
+            }
         }
     }
 

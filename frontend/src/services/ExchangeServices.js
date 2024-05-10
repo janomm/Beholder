@@ -4,9 +4,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 export async function getBalance(token) {
     const balanceUrl = `${API_URL}/exchange/balance`;
-    const headers = {
-        'authorization': token
-    } 
+    const headers = { 'authorization': token } 
     const response = await axios.get(balanceUrl,{headers});
     return response.data;
 }

@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const settingsRouter = require('./routers/settingsRouter.js');
 const symbolsRouter = require('./routers/symbolsRouter.js');
 const exchangeRouter = require('./routers/exchangeRouter.js');
+const ordersRouter = require('./routers/ordersRouter.js');
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use('/settings',authMiddleware,settingsRouter);
 app.use('/symbols',authMiddleware,symbolsRouter);
 
 app.use('/exchange',authMiddleware,exchangeRouter);
+
+app.use('/orders',authMiddleware,ordersRouter);
 
 app.use(require("./middlewares/errorMiddleware"));
 
