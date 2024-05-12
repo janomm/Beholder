@@ -8,6 +8,7 @@ import Wallet from './Wallet/Wallet';
 import CandleChart from './CandleChart';
 import NewOrderButton from '../../components/NewOrder/NewOrderButton';
 import NewOrderModal from '../../components/NewOrder/NewOrderModal';
+import SelectSymbol from '../../components/SelectSymbol/SelectSymbol';
 
 function Dashboard() {
 
@@ -20,6 +21,8 @@ function Dashboard() {
     const [balanceState, setBalanceState] = useState({});
 
     const [wallet, setWallet] = useState({});
+
+    const [chartSymbol, setChartSymbol] = useState('BTCBRL');
 
     function onWalletUpdate(walletObj) {
         setWallet(walletObj);
@@ -48,7 +51,9 @@ function Dashboard() {
         reconnectAttempts: 20
     })
 
-
+    function onChangeSymbol(event) {
+        setChartSymbol(event.target.value);
+    }
 
     return (
         <React.Fragment>
@@ -58,11 +63,16 @@ function Dashboard() {
                     <div className="d-block mb-4 mb-md-0">
                         <h1 className="h4">Dashboard</h1>
                     </div>
-                    <div className='mb-4'>
-                        <NewOrderButton />
+                    <div className='btn-toolbar mb-md-0'>
+                        <div className='d-inline-flex align-items-center'>
+                            <SelectSymbol onChange={onChangeSymbol} />
+                        </div>
+                        <div className='ms-2 ms-lg-3'>
+                            <NewOrderButton />
+                        </div>
                     </div>
                 </div>
-                <CandleChart symbol="BTCBRL" />
+                <CandleChart symbol={chartSymbol} />
                 <MiniTicker data={miniTickerState} />
                 <div className='row'>
                     <BookTicker data={bookState} />

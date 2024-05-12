@@ -1,9 +1,17 @@
 const symbolsRepository = require('../repositories/symbolsRepository');
-const crypto = require('../utils/crypto');
 
 async function getSymbols(req, res, next) {
-    const symbols = await symbolsRepository.getSymbols();
-    res.json(symbols);
+
+    const { search, page, onlyFavorites } = req.query;
+
+    let result;
+
+    if(search || page || onlyFavorites)
+        result = await symbolsRepository.searchSymbols(search, onlyFavorites === 'true', page);
+    else
+        result = await symbolsRepository.getSymbols();
+    
+    res.json(result);
 }
 
 async function getSymbol(req, res, next) {
@@ -25,7 +33,7 @@ async function syncSymbol(req, res, next) {
     const settingsRepository = require('../repositories/settingsRepository');
     const settings = await settingsRepository.getDecryptedSettings(res.locals.token.id);
     const { exchangeInfo } = require('../utils/exchange')(settings.get({ plain: true }));
-    
+
     const symbols = (await exchangeInfo()).symbols.map(item => {
 
         const minNotionalFilter = item.filters.find(f => f.filterType === 'NOTIONAL');

@@ -41,7 +41,7 @@ const orderModel = database.define('order', {
     limitPrice: Sequelize.STRING,
     stopPrice: Sequelize.STRING,
     avgPrice: Sequelize.DECIMAL(18,8),
-    comission: Sequelize.STRING,
+    commission: Sequelize.STRING,
     net: Sequelize.DECIMAL(18,8),
     quantity: {
         type: Sequelize.STRING,

@@ -45,33 +45,6 @@ async function updateOrderByOrderId(orderId, clientOrderId, newOrder) {
     return updateOrder(order, newOrder);
 }
 
-/*async function updateOrder(currentOrder, newOrder) {
-    if (newOrder.status && newOrder.status !== currentOrder.status)
-        currentOrder.status = newOrder.status;
-
-    if (newOrder.avgPrice && newOrder.avgPrice !== currentOrder.avgPrice)
-        currentOrder.avgPrice = newOrder.avgPrice;
-
-    if (newOrder.obs && newOrder.obs !== currentOrder.obs)
-        currentOrder.obs = newOrder.obs;
-
-    if (newOrder.transactTime && newOrder.transactTime !== currentOrder.transactTime)
-        currentOrder.transactTime = newOrder.transactTime;
-
-    if (newOrder.comission && newOrder.comission !== currentOrder.comission)
-        currentOrder.comission = newOrder.comission;
-
-    if (newOrder.net && newOrder.net !== currentOrder.net)
-        currentOrder.net = newOrder.net;
-
-    if (newOrder.isMaker !== null && newOrder.isMaker !== undefined &&
-        newOrder.isMaker && newOrder.isMaker !== currentOrder.isMaker)
-        currentOrder.isMaker = newOrder.isMaker;
-
-    await currentOrder.save();
-    return currentOrder;
-}*/
-
 async function updateOrder(currentOrder, newOrder) {
     if (!currentOrder || !newOrder) return false;
 

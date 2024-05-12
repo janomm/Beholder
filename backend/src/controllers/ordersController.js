@@ -57,7 +57,7 @@ async function cancelOrder(req, res, next) {
         result = await exchange.cancel(symbol, orderId);
         //console.log(await exchange.cancel(symbol, orderId));
     } catch (err) {
-        return res.status(400).json(err.body);        
+        return res.status(400).json(err.body);
     }
 
     const order = await ordersRepository.updateOrderByOrderId(result.orderId, result.origClientOrderId, {
@@ -66,39 +66,51 @@ async function cancelOrder(req, res, next) {
     res.json(order.get({ plain: true }));
 }
 
-
-async function cancelOrder_old(req, res, next) {
-
+async function syncOrder(req, res, next) {
     const id = res.locals.token.id;
     const settings = await settingsRepository.getDecryptedSettings(id);
     const exchange = require('../utils/exchange')(settings);
 
-    const { symbol, orderId } = req.params;
-    /*let result;
+    const beholderOrderId = req.params.id;
+    const order = await ordersRepository.getOrderById(beholderOrderId);
+    if (!order) return res.sendStatus(404);
+
+    let binanceOrder, binanceTrade;
     try {
-        result = await exchange.cancel(symbol, orderId);
-        //console.log(await exchange.cancel(symbol, orderId));
+        binanceOrder = await exchange.orderStatus(order.symbol, order.orderId);
+        order.status = binanceOrder.status;
+        order.transactTime = binanceOrder.updateTime;
+
+        if (binanceOrder.status !== 'FILLED') {
+            await order.save();
+            return res.json(order);
+        }
+        binanceTrade = await exchange.orderTrade(order.symbol, order.orderId);
     } catch (err) {
-        return res.status(400).json(err.body);        
-    }*/
-    const result = {
-        status: 'CANCELLED',
-        orderId: 2119790,
-        origClientOrderId: 'BghjFa5JzSNhEg5nOnE4a1'
+        console.error(err.response);
+        res.sendStatus(404);
     }
 
-    console.log(result);
-    
-    const order = await ordersRepository.updateOrderById(result.orderId, result.origClientOrderId, {
-        status: result.status
-    })
+    const quoteQuantity = parseFloat(binanceOrder.cummulativeQuoteQty);
+    order.avgPrice = quoteQuantity / parseFloat(binanceOrder.executeQty);
+    order.isMaker = binanceOrder.isMaker;
+    order.commission = binanceTrade.commission;
+
+    const isQuoteCommission = binanceTrade.commissionAsset && order.symbol.endsWith(binanceTrade.commissionAsset);
+    if (isQuoteCommission)
+        order.net = quoteQuantity - parseFloat(binanceTrade.commission);
+    else
+        order.net = quoteQuantity;
 
 
-    res.json(order.get({ plain: true }));
+    await order.save();
+
+    res.json(order);
 }
 
 module.exports = {
     getOrders,
     placeOrder,
-    cancelOrder
+    cancelOrder,
+    syncOrder
 }

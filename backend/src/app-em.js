@@ -16,7 +16,7 @@ module.exports = (settings, wss) => {
         });
     }
 
-    exchange.miniTickerStream((markets) => {
+    exchange.miniTickerStream(markets => {
         broadcast({ miniTicker: markets });
 
         const books = Object.entries(markets).map(mkt => {
@@ -51,17 +51,20 @@ module.exports = (settings, wss) => {
         if (order.status === orderStatus.REJECTED) order.obs = executionData.r;
 
         setTimeout(() => {
-            console.log('uha')
             ordersRepository.updateOrderByOrderId(order.orderId, order.clientOrderId, order)
                 .then(order => order && broadcast({ execution: order }))
                 .catch(err => console.error(err));
         }, 3000)
     }
 
-    exchange.userDataStream(balanceData => {
-        broadcast({ balance: balanceData });
-    },
-        executionData => {console.log('sei lá'); processExecutionData(executionData)}
+    exchange.userDataStream(
+        balanceData => {
+            broadcast({ balance: balanceData });
+        },
+        executionData => {
+            console.log('sei lá');
+            processExecutionData(executionData)
+        }
     )
 
 

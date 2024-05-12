@@ -12,6 +12,13 @@ export async function getOrders(symbol, page, token) {
     return response.data; // { count, rows }
 }
 
+export async function syncOrder(beholderOrderId, token) {
+    const ordersUrl = `${ORDERS_URL}${beholderOrderId}/sync`;
+    const headers = { 'authorization': token }
+    const response = await axios.post(ordersUrl, null, { headers });
+    return response.data; // { count, rows }
+}
+
 export async function cancelOrder(symbol, orderId, token) {
     const ordersUrl = `${ORDERS_URL}${symbol}/${orderId}`;
     const headers = { 'authorization': token }

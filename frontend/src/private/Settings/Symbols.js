@@ -1,47 +1,66 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from 'react-router-dom'
-import { getSymbols, syncSymbols } from "../../services/SymbolsService";
+import { useHistory, useLocation } from 'react-router-dom'
+import { searchSymbols, getSymbols, syncSymbols } from "../../services/SymbolsService";
 import SymbolRow from "./SymbolRow";
-import SelectQuote, { getDefaultQuote, filterSymbolObjects, setDefaultQuote } from "../../components/selectQuote/SelectQuote";
+import SelectQuote, { getDefaultQuote, setDefaultQuote } from "../../components/selectQuote/SelectQuote";
 import SymbolModal from "./SymbolModal";
+import Pagination from "../../components/Pagination/Pagination";
 
 function Symbols() {
 
     const [symbols, setSymbols] = useState([]);
     const history = useHistory();
+    const defaultLocation = useLocation()
+    
+    function getPage(location){
+        if(!location) location = defaultLocation;
+        return new URLSearchParams(location.search).get('page') || 1;
+    }
+
+    useEffect(() => {
+        return history.listen(location => {
+            setPage(getPage(location));
+        })
+    },[history])
+
     const [error, setError] = useState('');
+    const [count, setCount] = useState(0);
+    const [page, setPage] = useState(getPage());
     const [success, setSuccess] = useState('');
     const [quote, setQuote] = useState(getDefaultQuote());
     const [isSyncing, setIsSyncing] = useState(false);
-    const [editSymbol,setEditSymbol] = useState({
-        symbol :'',
+    const [editSymbol, setEditSymbol] = useState({
+        symbol: '',
         basePrecision: 0,
         quotePrecision: 0,
         minLotSize: '',
         minNotional: ''
     });
 
-    function erroHandling(err){
-        console.error( err.response ? err.response.data : err.message );
+    function erroHandling(err) {
+        console.error(err.response ? err.response.data : err.message);
         setError(err.response ? err.response.data : err.message);
         setSuccess('');
     }
 
-    function loadSymbols(){
+    function loadSymbols(selectedValue) {
         const token = localStorage.getItem('token');
-        getSymbols(token)
-            .then(symbols => {
-                setSymbols(filterSymbolObjects(symbols,quote));
+        const search = selectedValue === 'FAVORITES' ? '' : selectedValue;
+        const onlyFavorites = selectedValue === 'FAVORITES';
+
+        searchSymbols(search, onlyFavorites, getPage(), token)
+            .then(result => {
+                setSymbols(result.rows);
+                setCount(result.count);
             })
             .catch(err => erroHandling(err))
-
     }
 
     useEffect(() => {
-        loadSymbols();
-    }, [isSyncing, quote])
+        loadSymbols(quote);
+    }, [isSyncing, quote, page])
 
-    function onModalSubmit(event){
+    function onModalSubmit(event) {
         loadSymbols();
 
     }
@@ -68,8 +87,8 @@ function Symbols() {
         setDefaultQuote(event.target.value);
     }
 
-    function onEditSymbol(event){
-        const symbol = event.target.id.replace('edit','');
+    function onEditSymbol(event) {
+        const symbol = event.target.id.replace('edit', '');
         const symbolObj = symbols.find(s => s.symbol === symbol);
         setEditSymbol(symbolObj)
 
@@ -107,6 +126,7 @@ function Symbols() {
                                         {symbols.map(item => <SymbolRow key={item.symbol} data={item} onClick={onEditSymbol} />)}
                                     </tbody>
                                 </table>
+                                <Pagination count={count} />
                                 <div className="card-footer">
                                     <div className="row">
                                         <div className="col">
@@ -126,7 +146,7 @@ function Symbols() {
                     </div>
                 </div>
             </div>
-            <SymbolModal data={editSymbol} onSubmit={onModalSubmit}/>
+            <SymbolModal data={editSymbol} onSubmit={onModalSubmit} />
         </React.Fragment>
     );
 
