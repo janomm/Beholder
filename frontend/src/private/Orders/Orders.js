@@ -15,7 +15,7 @@ function Orders() {
     const { symbol } = useParams();
 
     const [search, setSearch] = useState(symbol || '');
-    const [viewOrder,setViewOrder] = useState({})
+    const [viewOrder, setViewOrder] = useState({});
 
     const deafultLocation = useLocation();
 
@@ -66,7 +66,7 @@ function Orders() {
         getBalanceCall(token);
 
         getOrdersCall(token);
-    }, [page, search])
+    }, [page, search, ])
 
     useEffect(() => {
         return history.listen(location => {
@@ -82,8 +82,8 @@ function Orders() {
         setSearch(event.target.value);
     }
 
-    function onViewClick(event){
-        const id = parseInt(event.target.id.replace("view",""));
+    function onViewClick(event) {
+        const id = parseInt(event.target.id.replace("view", ""));
         setViewOrder(orders.find(o => o.id === id))
     }
 
@@ -130,7 +130,7 @@ function Orders() {
                     <Pagination count={count} />
                 </div>
             </main>
-            <ViewOrderModal data={viewOrder} /> 
+            <ViewOrderModal data={viewOrder} />
             <NewOrderModal wallet={balances} onSubmit={onOrderSubmit} />
         </React.Fragment>
     );

@@ -44,7 +44,7 @@ module.exports = (settings) => {
     }
 
     async function orderTrade(symbol, orderId){
-        const trades = binance.trades(symbol);
+        const trades = await binance.trades(symbol);
         return trades.find(t => t.orderId === orderId)
     }
 

@@ -13,9 +13,8 @@ export async function getOrders(symbol, page, token) {
 }
 
 export async function syncOrder(beholderOrderId, token) {
-    const ordersUrl = `${ORDERS_URL}${beholderOrderId}/sync`;
     const headers = { 'authorization': token }
-    const response = await axios.post(ordersUrl, null, { headers });
+    const response = await axios.post(`${ORDERS_URL}${beholderOrderId}/sync`, null, { headers });
     return response.data; // { count, rows }
 }
 
@@ -27,7 +26,6 @@ export async function cancelOrder(symbol, orderId, token) {
 }
 
 export async function placeOrder(order, token) {
-    //console.log("Side-> " + order.side);
     const postOrder = {
         symbol: order.symbol.toUpperCase(),
         quantity: order.quantity,
@@ -40,7 +38,6 @@ export async function placeOrder(order, token) {
     else if (STOP_TYPES.indexOf(order.type) !== -1)
         postOrder.options = { stopPrice: order.stopPrice, type: order.type }
 
-    console.log(postOrder)
     const headers = { 'authorization': token }
     const response = await axios.post(ORDERS_URL, postOrder, { headers });
     return response.data;

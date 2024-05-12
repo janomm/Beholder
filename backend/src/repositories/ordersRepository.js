@@ -3,12 +3,25 @@ const Sequelize = require('sequelize');
 
 const PAGE_SIZE = 10;
 
+const orderStatus = {
+    FILLED: 'FILLED',
+    PARTIALLY_FILLED: 'PARTIALLY_FILLED',
+    CANCELED: 'CANCELED',
+    REJECTED: 'REJECTED',
+    NEW: 'NEW'
+}
+
+function insetOrder(newOrder) {
+    return orderModel.create(newOrder);
+}
+
 function getOrders(symbol, page = 1) {
     const options = {
         where: {},
         order: [['updatedAt', 'DESC']],
         limit: PAGE_SIZE,
-        offset: PAGE_SIZE * (page - 1)
+        offset: PAGE_SIZE * (page - 1),
+        distinct: true
     }
 
     if (symbol) {
@@ -23,10 +36,6 @@ function getOrders(symbol, page = 1) {
     return orderModel.findAndCountAll(options);
 }
 
-function insetOrder(newOrder) {
-    return orderModel.create(newOrder);
-}
-
 function getOrderById(id) {
     return orderModel.findByPk(id);
 }
@@ -37,11 +46,13 @@ function getOrder(orderId, clientOrderId) {
 
 async function updateOrderById(id, newOrder) {
     const order = await getOrderById(id);
+    if(!order) return false;
     return updateOrder(order, newOrder);
 }
 
 async function updateOrderByOrderId(orderId, clientOrderId, newOrder) {
     const order = await getOrder(orderId, clientOrderId);
+    if(!order) return false;
     return updateOrder(order, newOrder);
 }
 
@@ -82,5 +93,6 @@ module.exports = {
     updateOrderById,
     updateOrderByOrderId,
     updateOrder,
-    getOrders
+    getOrders,
+    orderStatus
 }

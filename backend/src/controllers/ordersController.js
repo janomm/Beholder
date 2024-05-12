@@ -55,7 +55,6 @@ async function cancelOrder(req, res, next) {
     let result;
     try {
         result = await exchange.cancel(symbol, orderId);
-        //console.log(await exchange.cancel(symbol, orderId));
     } catch (err) {
         return res.status(400).json(err.body);
     }
@@ -94,7 +93,8 @@ async function syncOrder(req, res, next) {
     const quoteQuantity = parseFloat(binanceOrder.cummulativeQuoteQty);
     order.avgPrice = quoteQuantity / parseFloat(binanceOrder.executeQty);
     order.isMaker = binanceOrder.isMaker;
-    order.commission = binanceTrade.commission;
+    order.commission = 
+    binanceTrade.commission;
 
     const isQuoteCommission = binanceTrade.commissionAsset && order.symbol.endsWith(binanceTrade.commissionAsset);
     if (isQuoteCommission)

@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const ordersRepository = require('./repositories/ordersRepository')
+const { orderStatus } = require('./repositories/ordersRepository');
 
 module.exports = (settings, wss) => {
 
@@ -48,6 +49,7 @@ module.exports = (settings, wss) => {
             order.net = isQuoteCommission ? quoteAmount - parseFloat(order.commission) : quoteAmount;
         }
 
+
         if (order.status === orderStatus.REJECTED) order.obs = executionData.r;
 
         setTimeout(() => {
@@ -62,11 +64,9 @@ module.exports = (settings, wss) => {
             broadcast({ balance: balanceData });
         },
         executionData => {
-            console.log('sei lá');
             processExecutionData(executionData)
         }
     )
-
 
     console.log(`App Exchange Monitor is running!`)
 }
