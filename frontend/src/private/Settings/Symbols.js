@@ -11,9 +11,9 @@ function Symbols() {
     const [symbols, setSymbols] = useState([]);
     const history = useHistory();
     const defaultLocation = useLocation()
-    
-    function getPage(location){
-        if(!location) location = defaultLocation;
+
+    function getPage(location) {
+        if (!location) location = defaultLocation;
         return new URLSearchParams(location.search).get('page') || 1;
     }
 
@@ -21,7 +21,7 @@ function Symbols() {
         return history.listen(location => {
             setPage(getPage(location));
         })
-    },[history])
+    }, [history])
 
     const [error, setError] = useState('');
     const [count, setCount] = useState(0);

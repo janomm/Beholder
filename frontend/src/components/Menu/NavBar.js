@@ -1,9 +1,9 @@
 import React from "react";
 
-function NavBar(){
-    return(
-    <React.Fragment>
-        <nav className='navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none'>
+function NavBar() {
+    return (
+        <React.Fragment>
+            <nav className='navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none'>
                 <a className="navbar-brand me-lg-5" href="/dashboard">
                     <img className="navbar-brand-dark" src="img/brand/light.svg" alt="Beholder logo" />
                 </a>
@@ -14,7 +14,7 @@ function NavBar(){
                 </div>
 
             </nav>
-    </React.Fragment>);
+        </React.Fragment>);
 }
 
 export default NavBar;

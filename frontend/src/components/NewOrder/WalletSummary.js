@@ -38,7 +38,7 @@ function WalletSummary(props) {
                 </div>
             </div>
         </div>
-    ),[props.symbol, props.wallet])
+    ), [props.symbol, props.wallet])
 
     return walletSumary;
 }

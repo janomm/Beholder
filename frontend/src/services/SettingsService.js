@@ -6,16 +6,16 @@ export async function getSettings(token) {
     const settingsUrl = `${API_URL}/settings`;
     const headers = {
         'authorization': token
-    } 
-    const response = await axios.get(settingsUrl,{headers});
+    }
+    const response = await axios.get(settingsUrl, { headers });
     return response.data;
 }
 
-export async function updateSettings(settings,token){
+export async function updateSettings(settings, token) {
     const settingsUrl = `${API_URL}/settings`;
     const headers = {
         'authorization': token
-    } 
-    const response = await axios.patch(settingsUrl,settings,{headers});
+    }
+    const response = await axios.patch(settingsUrl, settings, { headers });
     return response.data;
 }

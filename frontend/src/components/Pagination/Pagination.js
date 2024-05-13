@@ -9,7 +9,7 @@ const PAGE_SIZE = 10;
  */
 function Pagination(props) {
 
-    function useQuery(){
+    function useQuery() {
         return new URLSearchParams(useLocation().search);
     }
 
@@ -21,7 +21,7 @@ function Pagination(props) {
         return isActive ? "page-item active" : "page-item";
     }
 
-    function getPageLink(page){
+    function getPageLink(page) {
         return `${window.location.pathname}?page=${page}`;
     }
 
@@ -31,7 +31,7 @@ function Pagination(props) {
     for (let i = 1; i <= pagesQty; i++) {
         pages.push(i);
     }
-    
+
     return (
         <div className="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
             <nav aria-label="Page navigation">

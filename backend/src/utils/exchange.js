@@ -39,11 +39,11 @@ module.exports = (settings) => {
         return binance.cancel(symbol, orderId);
     }
 
-    function orderStatus(symbol,orderId){
-        return binance.orderStatus(symbol,orderId);
+    function orderStatus(symbol, orderId) {
+        return binance.orderStatus(symbol, orderId);
     }
 
-    async function orderTrade(symbol, orderId){
+    async function orderTrade(symbol, orderId) {
         const trades = await binance.trades(symbol);
         return trades.find(t => t.orderId === orderId)
     }
@@ -65,6 +65,15 @@ module.exports = (settings) => {
         );
     }
 
+    async function chartStream(symbol, interval, callback) {
+        const binance = Binance().options({ family: 0 })
+        binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
+            const ohlc = binance.ohlc(chart);
+            callback(ohlc);
+
+        })
+    }
+
     return {
         exchangeInfo,
         miniTickerStream,
@@ -75,7 +84,8 @@ module.exports = (settings) => {
         sell,
         cancel,
         orderStatus,
-        orderTrade
+        orderTrade,
+        chartStream
     };
 
 }

@@ -1,4 +1,4 @@
-.tableFixHead{
+.tableFixHead {
     overflow: auto;
     height: 100px;
 }
@@ -14,10 +14,10 @@
     max-height: 300px;
 }
 
-.cardDark{
+.cardDark {
     background-color: #363c4e;
 }
 
-.divtradingView{
+.divtradingView {
     height: 500px;
 }

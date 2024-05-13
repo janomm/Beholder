@@ -74,21 +74,21 @@ function ViewOrderModal(props) {
     }
 
     useEffect(() => {
-        if(!isSyncing) return;
+        if (!isSyncing) return;
         const token = localStorage.getItem('token');
-        syncOrder(order.id,token)
+        syncOrder(order.id, token)
             .then(updatedOrder => {
                 setIsSyncing(false);
                 setOrder(updatedOrder);
                 history.go(0);
             })
             .catch(err => {
-                console.error(err.response ? err.response.data: err.message);
-                setError(err.response ? err.response.data: err.message);
+                console.error(err.response ? err.response.data : err.message);
+                setError(err.response ? err.response.data : err.message);
                 setIsSyncing(false);
             })
-        
-    },[isSyncing])
+
+    }, [isSyncing])
 
     return (
         <div className="modal fade" id="modalViewOrder" tabIndex="-1" role="dialog" aria-labelledby="modalTitleNotify" aria-hidden="true">

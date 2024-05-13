@@ -11,8 +11,8 @@ settingsRepository.getDefaultSettings()
         })
 
         const wss = appWs(server);
-        
-        appEm(settings,wss);
+
+        appEm(settings, wss);
     })
     .catch(err => {
         console.error(err);

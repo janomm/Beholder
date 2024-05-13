@@ -1,6 +1,6 @@
 import React from 'react';
 
-function NewOrderButton(){
+function NewOrderButton() {
     return (
         <button id="btnNewOrder" className="btn btn-primary animate-up-2" data-bs-toggle="modal" data-bs-target="#modalOrder">
             <svg className="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

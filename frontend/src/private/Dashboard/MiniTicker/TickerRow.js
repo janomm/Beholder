@@ -22,7 +22,7 @@ function TickerRow(props) {
             <td className="text-gray-900">{`${data.high}`.substring(0, 8)}</td>
             <td className="text-gray-900">{`${data.low}`.substring(0, 8)}</td>
         </tr>
-    ), [data.close,data.open,data.high,data.low])
+    ), [data.close, data.open, data.high, data.low])
 
     useEffect(() => {
         if (!props.data) return;

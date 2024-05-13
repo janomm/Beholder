@@ -22,24 +22,24 @@ function SelectQuote(props) {
     )
 }
 
-export function filterSymbolObjects(symbols,quote){
+export function filterSymbolObjects(symbols, quote) {
     return symbols.filter(s => {
-        if(quote === 'FAVORITES')
+        if (quote === 'FAVORITES')
             return s.isFavorite;
-        else 
+        else
             return s.symbol.endsWith(quote)
     })
 }
 
-export function filterSymbolNames(symbols,quote){
+export function filterSymbolNames(symbols, quote) {
     return filterSymbolObjects(symbols, quote).map(s => s.symbol);
 }
 
-export function setDefaultQuote(quote){
-    localStorage.setItem(DEFAULT_QUOTE_PROPERTY,quote);
+export function setDefaultQuote(quote) {
+    localStorage.setItem(DEFAULT_QUOTE_PROPERTY, quote);
 }
 
-export function getDefaultQuote(){
+export function getDefaultQuote() {
     return localStorage.getItem(DEFAULT_QUOTE_PROPERTY) ? localStorage.getItem(DEFAULT_QUOTE_PROPERTY) : "USD"
 }
 

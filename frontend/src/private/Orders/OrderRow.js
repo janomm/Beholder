@@ -26,7 +26,7 @@ function OrderRow(props) {
             default: return 'fw-normal'
         }
     }
-    
+
     return (
         <tr>
             <td>{props.data.symbol}</td>

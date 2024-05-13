@@ -66,7 +66,7 @@ function Orders() {
         getBalanceCall(token);
 
         getOrdersCall(token);
-    }, [page, search, ])
+    }, [page, search,])
 
     useEffect(() => {
         return history.listen(location => {

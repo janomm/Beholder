@@ -2,11 +2,11 @@ import React from "react";
 import NavBar from "./NavBar";
 import SideBar from './SideBar';
 
-function Menu(){
-    return(
+function Menu() {
+    return (
         <React.Fragment>
-            <NavBar/>
-            <SideBar/>
+            <NavBar />
+            <SideBar />
         </React.Fragment>
     );
 

@@ -9,25 +9,28 @@ const settingsRouter = require('./routers/settingsRouter.js');
 const symbolsRouter = require('./routers/symbolsRouter.js');
 const exchangeRouter = require('./routers/exchangeRouter.js');
 const ordersRouter = require('./routers/ordersRouter.js');
+const monitorsRouter = require('./routers/monitorsRouter.js');
 
 const app = express();
 
-app.use(cors({ origin : process.env.CORS_ORIGIN }));
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
 
 app.post('/login', authController.doLogin);
 
-app.post('/logout',authController.doLogout);
+app.post('/logout', authController.doLogout);
 
-app.use('/settings',authMiddleware,settingsRouter);
+app.use('/settings', authMiddleware, settingsRouter);
 
-app.use('/symbols',authMiddleware,symbolsRouter);
+app.use('/symbols', authMiddleware, symbolsRouter);
 
-app.use('/exchange',authMiddleware,exchangeRouter);
+app.use('/exchange', authMiddleware, exchangeRouter);
 
-app.use('/orders',authMiddleware,ordersRouter);
+app.use('/orders', authMiddleware, ordersRouter);
+
+app.use('/monitors', authMiddleware, monitorsRouter);
 
 app.use(require("./middlewares/errorMiddleware"));
 

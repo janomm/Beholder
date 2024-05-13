@@ -11,21 +11,21 @@ function Login() {
     const [error, setError] = useState('');
 
     function onChangeInput(event) {
-        if(event.target.id === 'email'){
+        if (event.target.id === 'email') {
             setEmail(event.target.value);
         } else {
-            setPassword(event.target.value);    
+            setPassword(event.target.value);
         }
-        
+
     }
-    
+
     function onSubmit(event) {
         event.preventDefault();
-        
-        doLogin(email,password)
-            .then(response =>{
-                if(response){
-                    localStorage.setItem("token",response.token);
+
+        doLogin(email, password)
+            .then(response => {
+                if (response) {
+                    localStorage.setItem("token", response.token);
                     history.push('/dashboard');
                 }
             })
@@ -89,9 +89,9 @@ function Login() {
                                     <button type="submit" className="btn btn-gray-800">Sign In</button>
                                 </div>
                                 {
-                                    error ? 
-                                    <div className="alert alert-danger mt-2">{error}</div>
-                                    : <React.Fragment></React.Fragment>
+                                    error ?
+                                        <div className="alert alert-danger mt-2">{error}</div>
+                                        : <React.Fragment></React.Fragment>
                                 }
                             </form>
                         </div>

@@ -8,7 +8,7 @@ import React from "react";
 
 function SearchSymbol(props) {
 
-    function getPlaceholder(){
+    function getPlaceholder() {
         return props.placeholder ? props.placeholder : 'Search Symbol';
     }
     return (

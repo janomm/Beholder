@@ -12,10 +12,10 @@ function getSettingsById(id) {
     return settingsModel.findOne({ where: { id } })
 }
 
-async function getDecryptedSettings(id){
+async function getDecryptedSettings(id) {
     let settings = settingsCache[id];
 
-    if(!settings){
+    if (!settings) {
         settings = await getSettingsById(id);
         settings.secretKey = crypto.decrypt(settings.secretKey);
         settingsCache[id] = settings;
@@ -24,11 +24,11 @@ async function getDecryptedSettings(id){
     return settings;
 }
 
-function clearSettingsCache(id){
+function clearSettingsCache(id) {
     settingsCache[id] = null;
 }
 
-async function getDefaultSettings(){
+async function getDefaultSettings() {
     const settings = await settingsModel.findOne();
     return getDecryptedSettings(settings.id);
 }
@@ -44,14 +44,14 @@ async function updateSettings(id, newSettings) {
         currentSettings.password = bcrypt.hashSync(newSettings.password);
     }
 
-    if (currentSettings.apiUrl&& currentSettings.apiUrl !== newSettings.apiUrl) {
+    if (currentSettings.apiUrl && currentSettings.apiUrl !== newSettings.apiUrl) {
         currentSettings.apiUrl = newSettings.apiUrl;
     }
 
-    if (currentSettings.streamUrl&& currentSettings.streamUrl !== newSettings.streamUrl) {
+    if (currentSettings.streamUrl && currentSettings.streamUrl !== newSettings.streamUrl) {
         currentSettings.streamUrl = newSettings.streamUrl;
     }
-    
+
     if (currentSettings.accesKey && currentSettings.accesKey !== newSettings.accesKey) {
         currentSettings.accesKey = newSettings.accesKey;
     }

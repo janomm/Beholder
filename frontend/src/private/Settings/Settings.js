@@ -171,7 +171,7 @@ function Settings() {
 
                     </div>
                 </div>
-                <Symbols/>
+                <Symbols />
             </main>
         </React.Fragment>
     );

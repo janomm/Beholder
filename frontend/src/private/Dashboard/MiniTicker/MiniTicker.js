@@ -3,7 +3,7 @@ import SelectQuote, { filterSymbolNames, getDefaultQuote } from "../../../compon
 import TickerRow from "./TickerRow";
 import { getSymbols } from "../../../services/SymbolsService";
 import { useHistory } from "react-router-dom";
-import  "../Dashboard";
+import "../Dashboard";
 
 /**
  * props:

@@ -6,11 +6,11 @@ async function getSymbols(req, res, next) {
 
     let result;
 
-    if(search || page || onlyFavorites)
+    if (search || page || onlyFavorites)
         result = await symbolsRepository.searchSymbols(search, onlyFavorites === 'true', page);
     else
         result = await symbolsRepository.getSymbols();
-    
+
     res.json(result);
 }
 

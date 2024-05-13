@@ -93,8 +93,8 @@ async function syncOrder(req, res, next) {
     const quoteQuantity = parseFloat(binanceOrder.cummulativeQuoteQty);
     order.avgPrice = quoteQuantity / parseFloat(binanceOrder.executeQty);
     order.isMaker = binanceOrder.isMaker;
-    order.commission = 
-    binanceTrade.commission;
+    order.commission =
+        binanceTrade.commission;
 
     const isQuoteCommission = binanceTrade.commissionAsset && order.symbol.endsWith(binanceTrade.commissionAsset);
     if (isQuoteCommission)

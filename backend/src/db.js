@@ -11,4 +11,4 @@ const sequelize = new Sequelize(
         logging: process.env.DB_LOGS === 'true'
     });
 
-    module.exports = sequelize;
+module.exports = sequelize;

@@ -10,7 +10,7 @@ export async function getSymbols(token) {
     return response.data;
 }
 
-export async function searchSymbols(search,onlyFavotires, page, token){
+export async function searchSymbols(search, onlyFavotires, page, token) {
     const headers = {
         'authorization': token
     }

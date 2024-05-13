@@ -40,9 +40,9 @@ const orderModel = database.define('order', {
     isMaker: Sequelize.BOOLEAN,
     limitPrice: Sequelize.STRING,
     stopPrice: Sequelize.STRING,
-    avgPrice: Sequelize.DECIMAL(18,8),
+    avgPrice: Sequelize.DECIMAL(18, 8),
     commission: Sequelize.STRING,
-    net: Sequelize.DECIMAL(18,8),
+    net: Sequelize.DECIMAL(18, 8),
     quantity: {
         type: Sequelize.STRING,
         allowNull: false
@@ -53,7 +53,7 @@ const orderModel = database.define('order', {
     updatedAt: Sequelize.DATE
 }, {
     indexes: [{
-        fields: ['clientOrderId','orderId'],
+        fields: ['clientOrderId', 'orderId'],
         unique: true
     }, {
         fields: ['symbol']

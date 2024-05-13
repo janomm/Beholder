@@ -46,13 +46,13 @@ function getOrder(orderId, clientOrderId) {
 
 async function updateOrderById(id, newOrder) {
     const order = await getOrderById(id);
-    if(!order) return false;
+    if (!order) return false;
     return updateOrder(order, newOrder);
 }
 
 async function updateOrderByOrderId(orderId, clientOrderId, newOrder) {
     const order = await getOrder(orderId, clientOrderId);
-    if(!order) return false;
+    if (!order) return false;
     return updateOrder(order, newOrder);
 }
 

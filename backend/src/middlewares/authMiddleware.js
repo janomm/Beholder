@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const {isBlackListed} = require("../controllers/AuthController");
+const { isBlackListed } = require("../controllers/AuthController");
 
 module.exports = (req, res, next) => {
     const token = req.headers['authorization'];

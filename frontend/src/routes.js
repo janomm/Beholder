@@ -6,14 +6,14 @@ import Dashboard from './private/Dashboard/Dashboard';
 import Orders from './private/Orders/Orders';
 
 function Routes() {
-    
-    function PrivateRoute({children, ...rest }){
+
+    function PrivateRoute({ children, ...rest }) {
         //const isAuthenticated = localStorage.getItem('token');
         return (
             <Route {...rest} render={() => {
                 return localStorage.getItem('token')
-                ? children 
-                : <Redirect to="/" />
+                    ? children
+                    : <Redirect to="/" />
             }} >
 
             </Route>

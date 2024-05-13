@@ -50,7 +50,7 @@ function SymbolModal(props) {
                 btnClose.current.click();
             })
             .catch(err => {
-                if(err.response && err.response.status === 401){
+                if (err.response && err.response.status === 401) {
                     btnClose.current.click();
                     return history.push('/');
                 }
