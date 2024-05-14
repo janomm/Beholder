@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import SelectQuote, { filterSymbolNames, getDefaultQuote } from "../../../components/selectQuote/SelectQuote";
 import TickerRow from "./TickerRow";
 import { getSymbols } from "../../../services/SymbolsService";
-import { useHistory } from "react-router-dom";
 import "../Dashboard";
 
 /**
@@ -11,7 +10,6 @@ import "../Dashboard";
 */
 function MiniTicker(props) {
 
-    const history = useHistory();
     const [symbols, setSymbols] = useState([]);
     const [quote, setQuote] = useState(getDefaultQuote());
 
@@ -19,11 +17,7 @@ function MiniTicker(props) {
         const token = localStorage.getItem('token');
         getSymbols(token)
             .then(symbols => setSymbols(filterSymbolNames(symbols, quote)))
-            .catch(err => {
-                if (err.response && err.response.status === 401)
-                    return history.push('/');
-                console.error(err);
-            })
+            .catch(err => console.error(err.response ? err.response.data : err.message));
 
     }, [quote])
 

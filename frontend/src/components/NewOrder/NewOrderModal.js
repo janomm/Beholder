@@ -7,7 +7,6 @@ import SelectSide from './SelectSide';
 import OrderType from './OrderType';
 import QuantityInput from './QuantityInput';
 import { STOP_TYPES } from '../../services/ExchangeServices';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { placeOrder } from '../../services/OrdersService';
 
 /***
@@ -20,8 +19,6 @@ function NewOrderModal(props) {
     const btnClose = useRef('');
     const btnSend = useRef('');
     const inputTotal = useRef('');
-
-    const history = useHistory('');
 
     const [error, setError] = useState("");
 
@@ -48,12 +45,9 @@ function NewOrderModal(props) {
                 if (props.onSubmit) props.onSubmit(result);
             })
             .catch(err => {
-                if (err.response && err.response.status === 401) {
-                    btnClose.current.click();
-                    return history.push('/');
-                }
-                console.error(err.message);
-            })
+                console.error(err.response ? err.response.data : err.message)
+                btnClose.current.click();
+            });
     }
 
     function onInputChange(event) {
@@ -83,12 +77,8 @@ function NewOrderModal(props) {
                 setSymbol(symbolObject)
             })
             .catch(err => {
-                if (err.response && err.response.status === 401) {
-                    btnClose.current.click();
-                    return history.push('/');
-                }
-                console.error(err);
-                setError(err.message);
+                console.error(err.response ? err.response.data : err.message);
+                setError(err.response ? err.response.data : err.message);
             })
     }, [order.symbol])
 

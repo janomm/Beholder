@@ -71,15 +71,12 @@ function Symbols() {
         syncSymbols(token)
             .then(response => setIsSyncing(false))
             .catch(err => {
-                if (err.response && err.response.status === 401) {
-                    localStorage.removeItem('token');
-                    return history.push('/');
-                }
-                console.error(err.message);
+                console.error(err.response ? err.response.data : err.message)
+                localStorage.removeItem('token');
                 setSuccess(``);
-                setError(err.message);
-            });
+                setError(err.response ? err.response.data : err.message);
 
+            });
     }
 
     function onQuoteChange(event) {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import SelectQuote, { filterSymbolNames, getDefaultQuote } from "../../../components/selectQuote/SelectQuote";
 import "../Dashboard"
 import { getSymbols } from "../../../services/SymbolsService";
@@ -11,7 +10,6 @@ import BookRow from "./BookRow";
  */
 function BookTicker(props) {
 
-    const history = useHistory();
     const [symbols, setSymbols] = useState([]);
     const [quote, setQuote] = useState(getDefaultQuote());
 
@@ -19,11 +17,7 @@ function BookTicker(props) {
         const token = localStorage.getItem('token');
         getSymbols(token)
             .then(symbols => setSymbols(filterSymbolNames(symbols, quote)))
-            .catch(err => {
-                if (err.response && err.response.status === 401)
-                    return history.push('/');
-                console.error(err);
-            })
+            .catch(err => console.error(err.response ? err.response.data : err.message));
 
     }, [quote])
 

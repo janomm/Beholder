@@ -9,6 +9,7 @@ import CandleChart from './CandleChart';
 import NewOrderButton from '../../components/NewOrder/NewOrderButton';
 import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 import SelectSymbol from '../../components/SelectSymbol/SelectSymbol';
+import Footer from '../../Footer/Footer';
 
 function Dashboard() {
 
