@@ -3,14 +3,19 @@ import { getSymbols } from "../../services/SymbolsService";
 
 /**
  * props:
- * - onlyFavorite
+ * - onlyFavorites
  * - disabled
  * - onChange
  */
 function SelectSymbol(props) {
 
+
+    function showOnlyFavorites() {
+        return props.onlyFavorites !== null && props.onlyFavorites !== undefined ? props.onlyFavorites : true;
+    }
     const [symbols, setSymbols] = useState(["LOADING"]);
-    const [onlyFavorites, setOnlyFavorites] = useState(props.onlyFavorites === null || props.onlyFavorites === undefined ? true : props.onlyFavorites);
+    //const [onlyFavorites, setOnlyFavorites] = useState(props.onlyFavorites === null || props.onlyFavorites === undefined ? true : props.onlyFavorites);
+    const [onlyFavorites, setOnlyFavorites] = useState(showOnlyFavorites());
 
     const selectRef = useRef('');
     const buttonRef = useRef('');
@@ -40,6 +45,10 @@ function SelectSymbol(props) {
                 setSymbols(["ERROR"]);
             })
     }, [onlyFavorites])
+
+    useEffect(() => {
+        selectRef.current.value = props.symbol;
+    }, [props.symbol])
 
     function onFavoriteClick() {
         return setOnlyFavorites(!onlyFavorites);

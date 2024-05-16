@@ -66,12 +66,30 @@ module.exports = (settings) => {
     }
 
     async function chartStream(symbol, interval, callback) {
-        const binance = Binance().options({ family: 0 })
+        //const binance = Binance().options({ family: 0 })
         binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
             const ohlc = binance.ohlc(chart);
             callback(ohlc);
-
         })
+    }
+
+    async function terminateChartStream(symbol, interval) {
+        //btcusdt@kline_1m
+        const signature = `${symbol.toLowerCase()}@kline_${interval}`;
+        binance.websockets.terminate(signature);
+        console.log(`Chart Stream ${signature} terminated!`);
+    }
+
+    async function ticketStream(symbol, callback, logs) {
+        const streamUrl = binance.websockets.prevDay(symbol, (data, converted) => {
+            callback(converted)
+        });
+        if (logs) console.log(`Ticket Stream connected at ${streamUrl}`);
+    }
+
+    function terminateTickerStream(symbol, logs) {
+        binance.websockets.terminate(`${symbol.toLowerCase()}@ticker`);
+        if (logs) console.log(`Ticket Stream disconnected at ${symbol.toLowerCase()}@ticker`);
     }
 
     return {
@@ -85,7 +103,10 @@ module.exports = (settings) => {
         cancel,
         orderStatus,
         orderTrade,
-        chartStream
+        chartStream,
+        terminateChartStream,
+        ticketStream,
+        terminateTickerStream
     };
 
 }

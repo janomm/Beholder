@@ -5,6 +5,7 @@ import SelectInterval from "./SelectInterval";
 import MonitorIndex from "./MonitorIndex";
 import SwitchInput from "../../../components/SwitchInput/SwitchInput";
 import { saveMonitor } from "../../../services/MonitorServices";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 /***
  * props:
@@ -20,20 +21,27 @@ function MonitorModal(props) {
     const btnClose = useRef('');
     const btnSave = useRef('');
 
+    //const history = useHistory("");
+
+    useEffect(() => {
+        setMonitor(props.data);
+    }, [props.data])
+
     function onSubmit(event) {
         const token = localStorage.getItem('token');
+        const broadcastLabel = document.getElementById('broadcastLabel').value.length === 0 ? ' ' : document.getElementById('broadcastLabel').value;
+        monitor.broadcastLabel = broadcastLabel;
+
         saveMonitor(monitor.id, monitor, token)
             .then(result => {
                 btnClose.current.click();
-                if(props.onSubmit) props.onSubmit(result)
+                if (props.onSubmit) props.onSubmit(result)
 
             })
             .catch(err => {
                 console.err(err.response ? err.response.data : err.message);
                 setError(err.response ? err.response.data : err.message);
             });
-
-        props.onSubmit(event);
     }
 
     function onInputChange(event) {
@@ -42,7 +50,6 @@ function MonitorModal(props) {
 
     function getIntervalClasses(monitorType) {
         return monitorType === 'CANDLES' ? 'col-md-6 mb-3' : 'col-md-6 mb-3 d-none';
-
     }
 
     return (
@@ -57,21 +64,41 @@ function MonitorModal(props) {
                         <div className='form-group'>
                             <div className='row'>
                                 <div className='col-md-6 mb-3'>
-                                    <div className='form-group'>
-                                        <label htmlFor='symbol'>Symbol</label>
-                                        <SelectSymbol onChange={onInputChange} symbol={monitor.symbol} />
-                                    </div>
+                                    <MonitorType type={monitor.type} onChange={onInputChange} />
                                 </div>
+                                {
+                                    monitor.type === 'CANDLES' || monitor.type === 'TICKER'
+                                        ? (
+                                            <div className='col-md-6 mb-3'>
+                                                <div className='form-group'>
+                                                    <label htmlFor='symbol'>Symbol</label>
+                                                    <SelectSymbol onChange={onInputChange} symbol={monitor.symbol} onlyFavorites={false} />
+                                                </div>
+                                            </div>
+                                        )
+                                        : <React.Fragment />
+                                }
                             </div>
                             <div className='row'>
                                 <div className='col-md-6 mb-3'>
-                                    <MonitorType type={monitor.type} onChange={onInputChange} />
+                                    <div className="form-group">
+                                        <label htmlFor="broadcastLabel">
+                                            Broadcast Label:
+                                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="Label to broadcast then info via WebSockets" className="badge bg-warning py-1">?</span>
+                                        </label>
+                                        <input type="text" id="broadcastLabel" className="form-control" onChange={onInputChange} defaultValue={monitor.broadcastLabel} placeholder="none" />
+                                    </div>
                                 </div>
                                 <div className={getIntervalClasses(monitor.type)}>
                                     <SelectInterval interval={monitor.interval} onChange={onInputChange} />
                                 </div>
                             </div>
-                            <MonitorIndex indexes={monitor.indexes} onChange={onInputChange} />
+                            {
+                                monitor.type === 'CANDLES'
+                                    ? (<MonitorIndex indexes={monitor.indexes} onChange={onInputChange} />)
+                                    : <React.Fragment />
+                            }
+
                             <div className="row">
                                 <div className="col-md-6 mb-3">
                                     <div className="form-group">
@@ -92,7 +119,7 @@ function MonitorModal(props) {
                                 ? <div className="alert alert-danger mt-1 col-9 py-1">{error}</div>
                                 : <React.Fragment />
                         }
-                        <button ref={btnSave} type="submit" className="btn btn-sm btn-primary" onClick={onSubmit}>Save</button>
+                        <button ref={btnSave} type="text" className="btn btn-sm btn-primary" onClick={onSubmit}>Save</button>
                     </div>
                 </div>
             </div>

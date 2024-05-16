@@ -3,7 +3,7 @@ import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom.m
 import Menu from "../../components/Menu/Menu";
 import Pagination from "../../components/Pagination/Pagination";
 //import Footer from "../../Footer/Footer";
-import { getMonitors } from '../../services/MonitorServices';
+import { getMonitors, deleteMonitor, startMonitor, stopMonitor } from '../../services/MonitorServices';
 import MonitorRow from "./MonitorRow";
 import MonitorModal from "./MonitorModal/MonitorModal";
 
@@ -14,12 +14,14 @@ function Monitors() {
     const [page, setPage] = useState(getPage());
     const [count, setCount] = useState(0);
     const [monitors, setMonitors] = useState([]);
-    const [editMonitor, setEditMonitor] = useState({
+    const DEFAULT_MONITOR = {
+        symbol: 'BNBBTC',
         type: 'CANDLES',
         interval: '1m',
         isActive: false,
         logs: false
-    });
+    }
+    const [editMonitor, setEditMonitor] = useState(DEFAULT_MONITOR);
 
     function getPage(location) {
         if (!location) location = defaultLocation;
@@ -43,23 +45,41 @@ function Monitors() {
     }, [page])
 
     function onEditClick(event) {
-        console.log('Edit Click');
+        const id = event.target.id.replace('edit', '');
+        setEditMonitor(monitors.find(m => m.id == id));
     }
 
     function onStopClick(event) {
-        console.log('Stop Click');
+        const token = localStorage.getItem('token');
+        const id = event.target.id.replace('stop', '');
+        stopMonitor(id, token)
+            .then(() => history.go(0))
+            .catch(err => console.error(err.response ? err.response.data : err.message));
     }
 
     function onStartClick(event) {
-        console.log('Start Click');
+        const token = localStorage.getItem('token');
+        const id = event.target.id.replace('start', '');
+        startMonitor(id, token)
+            .then(() => history.go(0))
+            .catch(err => console.error(err.response ? err.response.data : err.message));
     }
 
     function onDeleteClick(event) {
-        console.log('Delete Click');
+        const token = localStorage.getItem('token');
+        const id = event.target.id.replace('delete', '');
+        deleteMonitor(id, token)
+            .then(() => history.go(0))
+            .catch(err => console.error(err.response ? err.response.data : err.message));
+        //console.log('Delete Click');
     }
 
     function onModalSubmit(event) {
         history.go(0);
+    }
+
+    function onNewMonitorClick() {
+        setEditMonitor(DEFAULT_MONITOR);
     }
 
     return (
@@ -72,7 +92,7 @@ function Monitors() {
                     </div>
                     <div className="btn-toolbar mb-2 mb-md-0">
                         <div className="d-inline-flex align-items-center">
-                            <button id="btnNewMonitor" className="btn btn-primary animate-up-2" data-bs-toggle="modal" data-bs-target="#modalMonitor">
+                            <button id="btnNewMonitor" className="btn btn-primary animate-up-2" data-bs-toggle="modal" data-bs-target="#modalMonitor" onClick={onNewMonitorClick}>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="icon icon-xs me-2"><path fillRule="evenodd" d="M2 4.25A2.25 2.25 0 0 1 4.25 2h11.5A2.25 2.25 0 0 1 18 4.25v8.5A2.25 2.25 0 0 1 15.75 15h-3.105a3.501 3.501 0 0 0 1.1 1.677A.75.75 0 0 1 13.26 18H6.74a.75.75 0 0 1-.484-1.323A3.501 3.501 0 0 0 7.355 15H4.25A2.25 2.25 0 0 1 2 12.75v-8.5Zm1.5 0a.75.75 0 0 1 .75-.75h11.5a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-.75.75H4.25a.75.75 0 0 1-.75-.75v-7.5Z" clipRule="evenodd" /></svg>
                                 New Monitor
                             </button>

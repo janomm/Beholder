@@ -6,13 +6,18 @@ const indexKeys = {
     LAST_ORDER: 'LAST_ORDER',
     LAST_CANDLE: 'LAST_CANDLE',
     WALLET: 'WALLET',
+    TICKER: 'TICKER',
     RSI: 'RSI',
-    MACD: 'MACD'
+    MACD: 'MACD',
+    SMA: 'SMA',
+    EMA: 'EMA',
+    STOCH_RSI: 'SRSI',
+    BOLLINGER_BANDS: 'BB'
 }
 
 function RSI(closes, period = 14) {
     const rsiResult = technicalindicators.rsi({
-        period: period,
+        period: parseInt(period),
         values: closes
     })
     return {
@@ -21,14 +26,14 @@ function RSI(closes, period = 14) {
     }
 }
 
-function MACD(closes, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9){
+function MACD(closes, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) {
     const macdResult = technicalindicators.macd({
         values: closes,
         SimpleMAOscillator: false,
         SimpleMASignal: false,
-        fastPeriod: fastPeriod,
-        slowPeriod: slowPeriod,
-        signalPeriod: signalPeriod
+        fastPeriod: parseInt(fastPeriod),
+        slowPeriod: parseInt(slowPeriod),
+        signalPeriod: parseInt(signalPeriod)
     });
     return {
         current: macdResult[macdResult.length - 1],
@@ -36,8 +41,60 @@ function MACD(closes, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9){
     }
 }
 
+function StochRSI(closes, dPeriod = 3, kPeriod = 3, rsiPeriod = 14, stochasticPeriod = 14) {
+    const stochResult = technicalindicators.stochasticrsi({
+        dPeriod: parseInt(dPeriod),
+        kPeriod: parseInt(kPeriod),
+        rsiPeriod: parseInt(rsiPeriod),
+        stochasticPeriod: parseInt(stochasticPeriod),
+        values: closes
+    });
+    return {
+        current: stochResult[stochResult.length - 1],
+        previous: stochResult[stochResult.length - 2]
+    }
+}
+
+function BollingerBands(closes, period = 20, stdDev = 2) {
+    const bbResult = technicalindicators.bollingerbands({
+        period: parseInt(period),
+        stdDev: parseInt(stdDev),
+        values: closes
+    })
+    return {
+        current: bbResult[bbResult.length - 1],
+        previous: bbResult[bbResult.length - 2]
+    }
+}
+
+function SMA(closes, period = 10) {
+    const smaResult = technicalindicators.sma({
+        values: closes,
+        period: parseInt(period)
+    });
+    return {
+        current: smaResult[smaResult.length - 1],
+        previous: smaResult[smaResult.length - 2]
+    }
+}
+
+function EMA(closes, period = 10) {
+    const emaResult = technicalindicators.ema({
+        values: closes,
+        period: parseInt(period)
+    });
+    return {
+        current: emaResult[emaResult.length - 1],
+        previous: emaResult[emaResult.length - 2]
+    }
+}
+
 module.exports = {
+    indexKeys,
     RSI,
     MACD,
-    indexKeys
+    StochRSI,
+    BollingerBands,
+    SMA,
+    EMA
 }

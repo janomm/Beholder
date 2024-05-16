@@ -4,6 +4,6 @@ const beholderController = require('../controllers/beholderController.js');
 
 router.get('/memory', beholderController.getMemory);
 
-router.post('/brain', beholderController.getBrain);
+router.get('/brain', beholderController.getBrain);
 
 module.exports = router;

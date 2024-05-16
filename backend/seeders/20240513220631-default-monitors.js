@@ -19,7 +19,7 @@ module.exports = {
         logs: false,
         createdAt: new Date(),
         updatedAt: new Date()
-      },{
+      }, {
         type: monitorTypes.BOOK,
         broadcastLabel: 'book',
         symbol: '*',
@@ -30,7 +30,7 @@ module.exports = {
         logs: false,
         createdAt: new Date(),
         updatedAt: new Date()
-      },{
+      }, {
         type: monitorTypes.USER_DATA,
         broadcastLabel: 'balance,execution',
         symbol: '*',
@@ -41,14 +41,14 @@ module.exports = {
         logs: false,
         createdAt: new Date(),
         updatedAt: new Date()
-      },{
+      }, {
         type: monitorTypes.CANDLES,
         broadcastLabel: null,
         symbol: 'BTCUSDT',
         interval: '1m',
         isActive: true,
         isSystemMon: false,
-        indexes: 'RSI,MACD',
+        indexes: 'RSI_14,MACD_12_26_9',
         logs: false,
         createdAt: new Date(),
         updatedAt: new Date()

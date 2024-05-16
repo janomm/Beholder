@@ -2,6 +2,9 @@ const MEMORY = {};
 
 let BRAIN = {};
 
+let LOCK_MEMORY = false;
+let LOCK_BRAIN = false;
+
 const LOGS = process.env.BEHOLDER_LOGS === 'true';
 
 function init(automations) {
@@ -9,6 +12,7 @@ function init(automations) {
 }
 
 function updateMemory(symbol, index, interval, value) {
+    if (LOCK_MEMORY) return;
     //symbol:index_interval
     //BTCUSD:RSI_1m
     //BTC:WALLET
@@ -24,10 +28,32 @@ function updateMemory(symbol, index, interval, value) {
         else
             console.log('NAO ENTROU NA CONDICAO');*/
     }
-
 }
 
-function getMemory() {
+function deleteMemory(symbol, index, interval) {
+
+    //SYMBOL:INDEX_INTERVAL - formato
+    try {
+        const indexKey = interval ? `${index}_${interval}` : index;
+        const memoryKey = `${symbol}:${indexKey}`;
+
+        LOCK_MEMORY = true;
+        delete MEMORY[memoryKey];
+    }
+    finally {
+        LOCK_MEMORY = false;
+    }
+    if (LOGS) console.log(`Beholder memory delete: ${memoryKey}`);
+}
+
+function getMemory(symbol, index, interval) {
+    if (symbol && index) {
+        const indexKey = interval ? `${index}_${interval}` : index;
+        const memoryKey = `${symbol}:${indexKey}`;
+
+        const result = MEMORY[memoryKey];
+        return typeof result === 'object' ? { ...result } : result;
+    }
     return { ...MEMORY }
 }
 
@@ -39,5 +65,6 @@ module.exports = {
     updateMemory,
     getMemory,
     getBrain,
-    init
+    init,
+    deleteMemory
 }

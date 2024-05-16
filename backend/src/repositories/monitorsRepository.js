@@ -4,7 +4,8 @@ const monitorTypes = {
     MINI_TICKER: 'MINI_TICKER',
     BOOK: 'BOOK',
     USER_DATA: 'USER_DATA',
-    CANDLES: 'CANDLES'
+    CANDLES: 'CANDLES',
+    TICKER: 'TICKER'
 }
 
 async function monitorExists(type, symbol, interval) {
@@ -56,10 +57,10 @@ async function updatedMonitor(id, newMonitor) {
         currentMonitor.interval = null;
     }
 
-    if (newMonitor.broardcastLabel && newMonitor.broardcastLabel !== currentMonitor.broardcastLabel)
-        currentMonitor.broardcastLabel = newMonitor.broardcastLabel;
+    if (newMonitor.broadcastLabel && newMonitor.broadcastLabel !== currentMonitor.broadcastLabel)
+        currentMonitor.broadcastLabel = newMonitor.broadcastLabel.trim().length !== 0 ? newMonitor.broadcastLabel : "";;
 
-    if (newMonitor.indexes && newMonitor.indexes !== currentMonitor.indexes)
+    if (newMonitor.indexes !== currentMonitor.indexes)
         currentMonitor.indexes = newMonitor.indexes;
 
     if (newMonitor.isActive !== null && newMonitor.isActive !== undefined
