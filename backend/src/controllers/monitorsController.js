@@ -38,7 +38,7 @@ function stopStreamMonitor(monitor) {
             break;
         }
         case monitorsRepository.monitorTypes.TICKER: {
-            return appEm.stopStreamMonitor(monitor.symbol, monitor.logs);
+            return appEm.stopTickerMonitor(monitor.symbol, monitor.logs);
             break;
         }
     }

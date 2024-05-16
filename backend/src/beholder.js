@@ -39,11 +39,11 @@ function deleteMemory(symbol, index, interval) {
 
         LOCK_MEMORY = true;
         delete MEMORY[memoryKey];
+        if (LOGS) console.log(`Beholder memory delete: ${memoryKey}`);
     }
     finally {
         LOCK_MEMORY = false;
     }
-    if (LOGS) console.log(`Beholder memory delete: ${memoryKey}`);
 }
 
 function getMemory(symbol, index, interval) {
