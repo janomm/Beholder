@@ -228,7 +228,7 @@ function getLightTicker(data) {
     return data;
 }
 
-function startTicketMonitor(symbol, broadcastLabel, logs) {
+function startTickerMonitor(symbol, broadcastLabel, logs) {
     if (!symbol) return new Error(`You can't start a Ticker Monitor without a symbol!`);
     if (!exchange) return new Error(`Exchange monitor not initialized yet!`);
 
@@ -277,7 +277,7 @@ async function init(settings, wssInstance, beholderInstance) {
                         monitor.broadcastLabel,
                         monitor.logs);
                 case monitorTypes.TICKER:
-                    return startTicketMonitor(monitor.symbol, monitor.broadcastLabel, monitor.logs);
+                    return startTickerMonitor(monitor.symbol, monitor.broadcastLabel, monitor.logs);
             }
         }, 250)
     })
@@ -288,6 +288,6 @@ module.exports = {
     init,
     startChartMonitor,
     stopChartMonitor,
-    startTicketMonitor,
+    startTickerMonitor,
     stopTickerMonitor
 }
