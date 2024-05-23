@@ -119,7 +119,7 @@ function MonitorModal(props) {
                                 ? <div className="alert alert-danger mt-1 col-9 py-1">{error}</div>
                                 : <React.Fragment />
                         }
-                        <button ref={btnSave} type="text" className="btn btn-sm btn-primary" onClick={onSubmit}>Save</button>
+                        <button ref={btnSave} type="button" className="btn btn-sm btn-primary" onClick={onSubmit}>Save</button>
                     </div>
                 </div>
             </div>

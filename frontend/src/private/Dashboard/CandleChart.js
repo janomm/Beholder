@@ -20,6 +20,7 @@ function CancleChart(props) {
             style: "1",
             locale: "en",
             toolbar_bg: "#f1f3f6",
+            hide_side_toolbar: false,
             enable_publishing: false,
             allow_symbol_change: true,
             details: true,

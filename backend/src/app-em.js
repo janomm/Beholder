@@ -1,8 +1,7 @@
 const ordersRepository = require('./repositories/ordersRepository')
 const { orderStatus } = require('./repositories/ordersRepository');
 const { getActiveMonitor, monitorTypes } = require('./repositories/monitorsRepository');
-const { RSI, MACD, indexKeys, BollingerBands, StochRSI } = require('./utils/indexes');
-const { SMA } = require('technicalindicators');
+const { execCalc, indexKeys } = require('./utils/indexes');
 
 let WSS, beholder, exchange;
 
@@ -63,18 +62,28 @@ function stopTickerMonitor(symbol, logs) {
 
 async function loadWallet() {
     if (!exchange) return new Error(`Exchange monitor not initialized yet!`);
-    const info = await exchange.balance();
-    const wallet = Object.entries(info).map(item => {
+    try {
+        const info = await exchange.balance();
+        const wallet = Object.entries(info).map(async (item) => {
 
-        beholder.updateMemory(item[0], indexKeys.WALLET, null, parseFloat(item[1].available));
+            const results = await beholder.updateMemory(item[0], indexKeys.WALLET, null, parseFloat(item[1].available));
+            if (results) results.map(r => sendMessage({ notification: r }));
 
-        return {
-            symbol: item[0],
-            available: item[1].available,
-            onOrder: item[1].onOrder
-        }
-    })
-    return wallet;
+            return {
+                symbol: item[0],
+                available: item[1].available,
+                onOrder: item[1].onOrder
+            }
+        })
+        return Promise.all(wallet);
+    }
+    catch (err) {
+        //console.error(err)
+        //console.error("Wallet not loaded!");
+        console.error(err.body ? JSON.stringify(err.body) : err.message);
+    }
+
+    return null;
 }
 
 function processExecutionData(executionData, broadcastLabel) {
@@ -139,28 +148,26 @@ function startUserDataMonitor(broadcastLabel, logs) {
 
 function processChartData(symbol, indexes, interval, ohlc, logs) {
     if (typeof indexes === 'string') indexes = indexes.split(',');
-    if (indexes && indexes.length > 0) {
-        indexes.map(index => {
-            const params = index.split('_');
-            const indexName = params[0];
-            params.splice(0, 1);
+    if (!indexes || !Array.isArray(indexes) || indexes.length === 0) return false;
 
-            let calc;
-            switch (indexName) {
-                case indexKeys.RSI: calc = RSI(ohlc.close, ...params); break;
-                case indexKeys.MACD: calc = MACD(ohlc.close, ...params); break;
-                case indexKeys.SMA: calc = SMA(ohlc.close, ...params); break;
-                case indexKeys.EMA: calc = EMA(ohlc.close, ...params); break;
-                case indexKeys.BOLLINGER_BANDS: calc = BollingerBands(ohlc.close, ...params); break;
-                case indexKeys.STOCH_RSI: calc = StochRSI(ohlc.close, ...params); break;
-                default: return;
-            }
+    return Promise.all(indexes.map(async (index) => {
+        const params = index.split('_');
+        const indexName = params[0];
+        params.splice(0, 1);
 
-            if (logs) console.log(`${index} calculated: ${JSON.stringify(calc.current)}`);
+        try {
+            const calc = execCalc(indexName, ohlc, ...params);
 
-            return beholder.updateMemory(symbol, index, interval, calc);
-        })
-    }
+            if (logs) console.log(`${index} calculated: ${JSON.stringify(calc.current ? calc.current : calc)}`);
+
+            return beholder.updateMemory(symbol, index, interval, calc, calc.current !== undefined);
+        }
+        catch (err) {
+            console.error(`Exchange Monitor => Can't calc then index ${indexName}: ${err.message}`);
+            console.error(err);
+            return false;
+        }
+    }));
 }
 
 function startChartMonitor(symbol, interval, indexes, broadcastLabel, logs) {
@@ -261,7 +268,6 @@ async function init(settings, wssInstance, beholderInstance) {
             switch (monitor.type) {
                 case monitorTypes.MINI_TICKER:
                     return startMiniTickerMonitor(monitor.broadcastLabel, monitor.logs);
-                //return startMiniTickerMonitor(monitor.broadcastLabel, true);
                 case monitorTypes.USER_DATA:
                     return startUserDataMonitor(monitor.broadcastLabel, monitor.logs);
                 case monitorTypes.CANDLES:

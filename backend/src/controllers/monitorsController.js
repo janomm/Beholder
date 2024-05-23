@@ -141,5 +141,6 @@ module.exports = {
     updateMonitor,
     deleteMonitor,
     startMonitor,
-    stopMonitor
+    stopMonitor,
+    validateMonitor
 }

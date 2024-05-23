@@ -65,12 +65,15 @@ module.exports = (settings) => {
         );
     }
 
-    async function chartStream(symbol, interval, callback) {
+    async function chartStream(symbol, interval, callback, logs) {
         //const binance = Binance().options({ family: 0 })
-        binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
+        const streamUrl = binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
+            const tick = binance.last(chart);
+            if (tick && chart[tick].isFinal === false) return;
             const ohlc = binance.ohlc(chart);
             callback(ohlc);
-        })
+        });
+        if (logs) console.log(`Chart Stream connected at ${streamUrl}`)
     }
 
     async function terminateChartStream(symbol, interval) {

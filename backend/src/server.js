@@ -4,6 +4,7 @@ const appWs = require('./app-ws');
 const settingsRepository = require('./repositories/settingsRepository');
 const appEm = require('./app-em');
 const beholder = require('./beholder');
+const automationRepository = require('./repositories/automationsRepository');
 
 (async () => {
     console.log('Getting the default settings!')
@@ -11,8 +12,9 @@ const beholder = require('./beholder');
     if (!settings) return new Error(`There is no settings.`);
 
     console.log('Initializing the Beholder Brain...')
-    
-    beholder.init([]);
+    const automations = await automationRepository.getActiveAutomations();
+
+    beholder.init(automations);
 
     console.log('Starting the Server Apps...')
     const server = app.listen(process.env.PORT || 3001, () => {

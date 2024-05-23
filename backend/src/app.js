@@ -11,6 +11,7 @@ const exchangeRouter = require('./routers/exchangeRouter.js');
 const ordersRouter = require('./routers/ordersRouter.js');
 const monitorsRouter = require('./routers/monitorsRouter.js');
 const beholderRouter = require('./routers/beholderRouder.js');
+const automationsRouter = require('./routers/automationsRouter.js');
 
 const app = express();
 
@@ -34,6 +35,8 @@ app.use('/orders', authMiddleware, ordersRouter);
 app.use('/monitors', authMiddleware, monitorsRouter);
 
 app.use('/beholder', authMiddleware, beholderRouter);
+
+app.use('/automations', authMiddleware, automationsRouter);
 
 app.use(require("./middlewares/errorMiddleware"));
 
