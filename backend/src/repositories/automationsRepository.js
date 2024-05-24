@@ -1,29 +1,30 @@
-const automationModal = require('../models/automationModel');
-const Sequelize = require('sequelize');
+const automationModel = require('../models/automationModel');
+const actionModel = require('../models/actionModel')
 
 function getActiveAutomations() {
-    return automationModal.findAll({ where: { isActive: true } });
+    return automationModel.findAll({ where: { isActive: true }, include: actionModel });
 }
 
 function getAutomation(id) {
-    return automationModal.findByPk(id);
+    return automationModel.findByPk(id, { include: actionModel });
 }
 
 function getAutomations(page = 1) {
-    return automationModal.findAndCountAll({
+    return automationModel.findAndCountAll({
         where: {},
         order: [['isActive', 'DESC'], ['symbol', 'ASC'], ['name', 'ASC']],
         limit: 10,
-        offset: 10 * (page - 1)
+        offset: 10 * (page - 1),
+        include: actionModel
     })
 }
 
-function insertAutomation(newAutomation) {
-    return automationModal.create(newAutomation);
+function insertAutomation(newAutomation, transaction) {
+    return automationModel.create(newAutomation, { transaction });
 }
 
-function deleteAutomation(id) {
-    return automationModal.destroy({ where: { id } });
+function deleteAutomation(id, transaction) {
+    return automationModel.destroy({ where: { id }, transaction });
 }
 
 async function updateAutomation(id, newAutomation) {

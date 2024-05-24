@@ -21,7 +21,9 @@ function AutomationModal(props) {
     const [indexes, setIndexes] = useState('');
     const [automation, setAutomation] = useState({
         name: '',
-        conditions: ''
+        conditions: '',
+        indexes: '',
+        actions: []
     });
 
     function onSubmitClick(event) {
@@ -107,7 +109,7 @@ function AutomationModal(props) {
                                 <ConditionsArea indexes={indexes} conditions={automation.conditions} onChange={onInputChange} symbol={automation.symbol} />
                             </div>
                             <div className="tab-pane fade " id="actions" role="tabpanel" aria-labelledby="actions-tab">
-                                <ActionsArea />
+                                <ActionsArea actions={automation.actions} onChange={onInputChange} />
                             </div>
                         </div>
                         <div className="row">

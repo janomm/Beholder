@@ -9,9 +9,11 @@ import AutomationModal from "./AutomationModal/AutomationModal";
 function Automations() {
 
     const DEFAULT_AUTOMATION = {
+        symbol: "",
         name: '',
-        conditions: '',
-        indexes: ''
+        conditions: "",
+        indexes: '',
+        actions: []
     }
 
     const defaultLocation = useLocation();
@@ -38,7 +40,6 @@ function Automations() {
             .then(result => {
                 setCount(result.count);
                 setAutomations(result.rows);
-                console.log(result.rows)
             })
             .catch(err => console.error(err.response ? err.response.data : err.message))
     }, [page])

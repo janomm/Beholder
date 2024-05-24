@@ -10,7 +10,6 @@ import Automations from './private/Automations/Automations';
 function Routes() {
 
     function PrivateRoute({ children, ...rest }) {
-        //const isAuthenticated = localStorage.getItem('token');
         return (
             <Route {...rest} render={() => {
                 return localStorage.getItem('token')
