@@ -6,6 +6,7 @@ import Pagination from "../../components/Pagination/Pagination";
 import { getMonitors, deleteMonitor, startMonitor, stopMonitor } from '../../services/MonitorServices';
 import MonitorRow from "./MonitorRow";
 import MonitorModal from "./MonitorModal/MonitorModal";
+import Toast from "../../components/Toast/Toast";
 
 function Monitors() {
 
@@ -22,6 +23,7 @@ function Monitors() {
         logs: false
     }
     const [editMonitor, setEditMonitor] = useState(DEFAULT_MONITOR);
+    const [notification, setNotification] = useState({ type: '', text: '' });
 
     function getPage(location) {
         if (!location) location = defaultLocation;
@@ -54,7 +56,10 @@ function Monitors() {
         const id = event.target.id.replace('stop', '');
         stopMonitor(id, token)
             .then(() => history.go(0))
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     function onStartClick(event) {
@@ -62,7 +67,10 @@ function Monitors() {
         const id = event.target.id.replace('start', '');
         startMonitor(id, token)
             .then(() => history.go(0))
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     function onDeleteClick(event) {
@@ -70,7 +78,10 @@ function Monitors() {
         const id = event.target.id.replace('delete', '');
         deleteMonitor(id, token)
             .then(() => history.go(0))
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     function onModalSubmit(event) {
@@ -120,6 +131,7 @@ function Monitors() {
                 </div>
             </main>
             <MonitorModal data={editMonitor} onSubmit={onModalSubmit} />
+            <Toast type={notification.type} text={notification.text} />
         </React.Fragment>
     );
 }

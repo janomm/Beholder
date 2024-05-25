@@ -1,4 +1,5 @@
 const { getDefaultSettings } = require('./repositories/settingsRepository');
+const { actionsType } = require('./repositories/actionsRepository')
 
 const MEMORY = {};
 
@@ -7,6 +8,8 @@ let BRAIN_INDEX = {};
 
 let LOCK_MEMORY = false;
 let LOCK_BRAIN = false;
+
+const INTERVAL = parseInt(process.env.AUTOMATION_INTERVAL || 0);
 
 const LOGS = process.env.BEHOLDER_LOGS === 'true';
 
@@ -42,15 +45,13 @@ function updateBrainIndex(index, automationId) {
 function findAutomations(memoryKey) {
     const ids = BRAIN_INDEX[memoryKey];
     if (!ids) return [];
-    return
-    ids.map(id => BRAIN[id])
+    return ids.map(id => BRAIN[id]);
 };
 
-function updateMemory(symbol, index, interval, value, executeAutomations = true) {
+async function updateMemory(symbol, index, interval, value, executeAutomations = true) {
+
     if (LOCK_MEMORY) return false;
-    //symbol:index_interval
-    //BTCUSD:RSI_1m
-    //BTC:WALLET
+
     const indexKey = interval ? `${index}_${interval}` : index;
     const memoryKey = `${symbol}:${indexKey}`;
     MEMORY[memoryKey] = value;
@@ -68,12 +69,14 @@ function updateMemory(symbol, index, interval, value, executeAutomations = true)
         const automations = findAutomations(memoryKey);
         if (automations && automations.length > 0 && !LOCK_BRAIN) {
             LOCK_BRAIN = true;
-            let results = automations.map(auto => {
+
+            const promises = automations.map((auto) => {
                 return evalDecision(auto);
             })
-                .flat()
 
-            results = results.filter(r => r);
+            let results = await Promise.all(promises);
+
+            results = results.flat().filter(r => r);
 
             if (!results || !results.length)
                 return false;
@@ -82,7 +85,10 @@ function updateMemory(symbol, index, interval, value, executeAutomations = true)
         }
     }
     finally {
-        LOCK_BRAIN = false;
+        setTimeout(() => {
+            LOCK_BRAIN = false;
+        }, INTERVAL)
+
     }
 }
 
@@ -90,23 +96,40 @@ function invertConditions(conditions) {
     const conds = conditions.split(' && ');
     return conds.map(c => {
         if (c.indexOf('current') !== -1) {
-            if (c.indexOf('>') !== -1) return c.replace('>', '<').replace('current', 'previous');
-            if (c.indexOf('<') !== -1) return c.replace('<', '>').replace('current', 'previous');
-            if (c.indexOf('!') !== -1) return c.replace('!', '').replace('current', 'previous');
-            if (c.indexOf('==') !== -1) return c.replace('==', '!==').replace('current', 'previous');
+            if (c.indexOf('>') != -1) return c.replace('>', '<').replace('current', 'previous');
+            if (c.indexOf('<') != -1) return c.replace('<', '>').replace('current', 'previous');
+            if (c.indexOf('!') != -1) return c.replace('!', '').replace('current', 'previous');
+            if (c.indexOf('==') != -1) return c.replace('==', '!==').replace('current', 'previous');
         }
     })
         .filter(c => c)
         .join(' && ');
 }
 
+function doAction(settings, action, automation) {
+    //console.log("doAction: " + action.type === actionsType.ALERT_EMAIL);
+    try {
+        switch (action.type) {
+            case actionsType.ORDER: return { type: 'sucess', text: 'Order placed!' }
+            case actionsType.ALERT_EMAIL: return { type: 'sucess', text: 'Email sent!' }
+            case actionsType.ALERT_SMS: return { type: 'sucess', text: 'SMS sent!' }
+        }
+    }
+    catch (err) {
+        if (automation.logs) {
+            console.error(`${automation.name}:${action.type}`);
+            console.error(err);
+        }
+        return { type: 'error', text: `Error at ${automation.name}:${err.message}` }
+    }
+}
+
 async function evalDecision(automation) {
-    const indexes = automation.indexes.split(',')
+    const indexes = automation.indexes.split(',');
     const isCheked = indexes.every(ix => MEMORY[ix] !== null && MEMORY[ix] !== undefined);
     if (!isCheked) return false;
 
     const invertedConditions = invertConditions(automation.conditions);
-
     const isValid = eval(automation.conditions + (invertedConditions ? ' && ' + invertedConditions : ''));
     if (!isValid) return false;
 
@@ -118,10 +141,15 @@ async function evalDecision(automation) {
     }
 
     const settings = await getDefaultSettings();
-    //para cada action da automation, executa a action com as settings
+    let results = automation.actions.map(action => {
+        return doAction(settings, action.dataValues, automation);
+    })
 
-    console.log('EXECUTEI A AÇÃO!');
-    //executar ações
+    results = await Promise.all(results);
+
+    if (automation.logs)
+        console.log(`Automation ${automation.name} has fired!`);
+    return { text: 'Executeia Ação', type: 'success' }
 }
 
 function deleteMemory(symbol, index, interval) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { getSettings, updateSettings } from '../../services/SettingsService';
 import Menu from '../../components/Menu/Menu';
 import Symbols from './Symbols';
+import Toast from "../../components/Toast/Toast";
 //import Footer from '../../Footer/Footer';
 
 function Settings() {
@@ -14,8 +15,7 @@ function Settings() {
     const inputAccessKey = useRef('');
     const inputSecretKey = useRef('');
 
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState('');
+    const [notification, setNotification] = useState({ type: '', text: '' });
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -25,11 +25,9 @@ function Settings() {
                 inputApiUrl.current.value = settings.apiUrl;
                 inputStreamUrl.current.value = settings.streamUrl;
                 inputAccessKey.current.value = settings.accessKey;
-
-
             }).catch(err => {
                 console.error(err.response ? err.response.data : err.message);
-                setError(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
             })
     }, [])
 
@@ -38,8 +36,7 @@ function Settings() {
 
         if ((inputNewPassword.current.value || inputConfirmPassword.current.value)
             && inputNewPassword.current.value !== inputConfirmPassword.current.value) {
-            return setError(`The fields New Password and Confirm Password must be equals.`);
-
+            return setNotification({ type: 'error', text: `The fields New Password and Confirm Password must be equals.` });
         }
         const token = localStorage.getItem('token');
         updateSettings({
@@ -52,20 +49,17 @@ function Settings() {
         }, token)
             .then(result => {
                 if (result) {
-                    setError("");
-                    setSuccess(`Settings updated successfully.`);
+                    setNotification({ type: 'success', text: `Settings updated successfully.` });
                     inputSecretKey.current.value = "";
                     inputNewPassword.current.value = "";
                     inputConfirmPassword.current.value = "";
                 } else {
-                    setSuccess("");
-                    setError(`Can't update the settings.`);
+                    setNotification({ type: 'error', text: `Can't update the settings.` });
                 }
             })
             .catch(error => {
-                setSuccess("");
                 console.error(error.response ? error.response.data : error.message);
-                setError(`Can't update the settings.`);
+                setNotification({ type: 'error', text: `Can't update the settings.` });
             })
     }
 
@@ -144,20 +138,8 @@ function Settings() {
                                         <div className="col-sm-3">
                                             <button className="btn btn-gray-800 mt-2 animate-up-2" type="submit" >Save all</button>
                                         </div>
-                                        {
-                                            error ?
-                                                <div className='alert alert-danger mt-2 col-9 py-2'>{error}</div>
-                                                : <React.Fragment></React.Fragment>
-                                        }
-                                        {
-                                            success ?
-                                                <div className='alert alert-success mt-2 col-9 py-2'>{success}</div>
-                                                : <React.Fragment></React.Fragment>
-                                        }
-
                                     </div>
                                 </div>
-
                             </form>
                         </div>
 
@@ -165,6 +147,7 @@ function Settings() {
                 </div>
                 <Symbols />
             </main>
+            <Toast type={notification.type} text={notification.text} />
         </React.Fragment>
     );
 }

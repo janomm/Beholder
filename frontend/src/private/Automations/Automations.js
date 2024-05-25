@@ -5,6 +5,7 @@ import Pagination from "../../components/Pagination/Pagination";
 import { getAutomations, stopAutomation, startAutomation, deleteAutomation } from "../../services/AutomationService";
 import AutomationRow from "./AutomationRow";
 import AutomationModal from "./AutomationModal/AutomationModal";
+import Toast from "../../components/Toast/Toast";
 
 function Automations() {
 
@@ -29,6 +30,7 @@ function Automations() {
     const [count, setCount] = useState(0);
     const [page, setPage] = useState(getPage());
     const [editAutomation, setEditAutomation] = useState(DEFAULT_AUTOMATION);
+    const [notification, setNotification] = useState({ type: '', text: '' });
 
     useEffect(() => {
         return history.listen(location => setPage(getPage(location)));
@@ -41,13 +43,14 @@ function Automations() {
                 setCount(result.count);
                 setAutomations(result.rows);
             })
-            .catch(err => console.error(err.response ? err.response.data : err.message))
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }, [page])
 
     function onNewAutomationClick() {
         setEditAutomation(DEFAULT_AUTOMATION);
-
-        //setAutomations(DEFAULT_AUTOMATION);
     }
 
     function onEditAutomationClick(event) {
@@ -61,7 +64,10 @@ function Automations() {
         const id = event.target.id.replace('stop', '');
         stopAutomation(id, token)
             .then(() => history.go(0))
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
 
     }
 
@@ -70,7 +76,10 @@ function Automations() {
         const id = event.target.id.replace('start', '');
         startAutomation(id, token)
             .then(() => history.go(0))
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     function onDeleteAutomationClick(event) {
@@ -78,7 +87,10 @@ function Automations() {
         const id = event.target.id.replace('delete', '');
         deleteAutomation(id, token)
             .then(() => history.go(0))
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     function onAutomationSubmit(event) {
@@ -124,6 +136,7 @@ function Automations() {
                 </div>
             </main>
             <AutomationModal data={editAutomation} onSubmit={onAutomationSubmit} />
+            <Toast type={notification.type} text={notification.text} />
         </React.Fragment>
     );
 }

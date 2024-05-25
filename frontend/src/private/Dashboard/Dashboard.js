@@ -9,21 +9,18 @@ import CandleChart from './CandleChart';
 import NewOrderButton from '../../components/NewOrder/NewOrderButton';
 import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 import SelectSymbol from '../../components/SelectSymbol/SelectSymbol';
+import Toast from "../../components/Toast/Toast";
 import Footer from '../../Footer/Footer';
 
 function Dashboard() {
 
     const history = useHistory();
-
     const [miniTickerState, setMiniTickerState] = useState({});
-
     const [bookState, setBookState] = useState({});
-
     const [balanceState, setBalanceState] = useState({});
-
     const [wallet, setWallet] = useState({});
-
     const [chartSymbol, setChartSymbol] = useState('BTCBRL');
+    const [notification, setNotification] = useState({ type: '', text: '' });
 
     function onWalletUpdate(walletObj) {
         setWallet(walletObj);
@@ -46,7 +43,10 @@ function Dashboard() {
             }
         },
         queryParams: { 'token': localStorage.getItem("token") },
-        onError: (err) => console.error(err),
+        onError: (err) => {
+            console.error(err);
+            setNotification({ type: 'error', text: err.message });
+        },
         shouldReconnect: (CloseEvent) => true,
         reconnectInterval: 3000,
         reconnectAttempts: 20
@@ -81,6 +81,7 @@ function Dashboard() {
                 </div>
             </main>
             <NewOrderModal wallet={wallet} onSubmit={onOrderSubmit} />
+            <Toast type={notification.type} text={notification.text} />
         </React.Fragment>
     );
 }

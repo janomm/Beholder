@@ -18,6 +18,7 @@ function deleteActions(automationId, transaction) {
 }
 
 module.exports = {
+    actionsType,
     insertActions,
     deleteActions
 }

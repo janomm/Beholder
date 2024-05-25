@@ -54,7 +54,8 @@ function VariableInput(props) {
     }
 
     function onAddClick(event) {
-        const value = typeof index.example === 'string' ? `'${variable}'` : variable;
+        //const value = typeof index.example === 'string' ? `'${variable}'` : variable;
+        const value = index.example === 'number' || !isNaN(parseFloat(index.example)) ? variable : `'${variable}'`;
         const condition = {
             eval: `${index.eval}${operator}${value}`,
             text: getExpressionText()
@@ -79,11 +80,12 @@ function VariableInput(props) {
                                     <option value="<=">less or equals</option>
                                 </React.Fragment>
                             )
-                            : <React.Fragment />
+                            : (<React.Fragment />)
                     }
                     <option value="==">equals</option>
                     <option value="!=">not equals</option>
                 </select>
+
                 <input type="text" ref={variableRef} id="variable" list="variables" className="form-select" onChange={onVariableChange} placeholder={`${index.example}`} />
                 <datalist id="variables">
                     {

@@ -9,6 +9,7 @@ import OrderRow from './OrderRow';
 import Pagination from '../../components/Pagination/Pagination';
 import SearchSymbol from '../../components/SearchSymbol/SearchSymbol';
 import ViewOrderModal from './ViewOrderModal';
+import Toast from "../../components/Toast/Toast";
 //import Footer from '../../Footer/Footer';
 
 function Orders() {
@@ -17,6 +18,7 @@ function Orders() {
 
     const [search, setSearch] = useState(symbol || '');
     const [viewOrder, setViewOrder] = useState({});
+    const [notification, setNotification] = useState({ type: '', text: '' });
 
     const deafultLocation = useLocation();
 
@@ -45,7 +47,10 @@ function Orders() {
 
                 setBalances(balances);
             })
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     function getOrdersCall(token) {
@@ -54,7 +59,10 @@ function Orders() {
                 setOrders(result.rows);
                 setCount(result.count)
             })
-            .catch(err => console.error(err.response ? err.response.data : err.message));
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
+            });
     }
 
     useEffect(() => {
@@ -128,6 +136,7 @@ function Orders() {
             </main>
             <ViewOrderModal data={viewOrder} />
             <NewOrderModal wallet={balances} onSubmit={onOrderSubmit} />
+            <Toast type={notification.type} text={notification.text} />
         </React.Fragment>
     );
 }
