@@ -106,11 +106,20 @@ function invertConditions(conditions) {
         .join(' && ');
 }
 
+async function sendMail(settings, automation) {
+    await require('./utils/email')(settings, `${automation.name} has fired! ${automation.conditions}`);
+    if (automation.logs) {
+        console.log(`E-mail sent from automation ${automation.name}!`)
+        return { type: 'sucess', text: 'Order placed!' }
+    }
+
+}
+
 function doAction(settings, action, automation) {
     //console.log("doAction: " + action.type === actionsType.ALERT_EMAIL);
     try {
         switch (action.type) {
-            case actionsType.ORDER: return { type: 'sucess', text: 'Order placed!' }
+            case actionsType.ORDER: return sendMail(settings, automation)
             case actionsType.ALERT_EMAIL: return { type: 'sucess', text: 'Email sent!' }
             case actionsType.ALERT_SMS: return { type: 'sucess', text: 'SMS sent!' }
         }

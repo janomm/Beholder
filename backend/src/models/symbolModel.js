@@ -31,6 +31,8 @@ const symbolModel = database.define('symbol', {
     },
     base: Sequelize.STRING,
     quote: Sequelize.STRING,
+    tickSize: Sequelize.STRING,
+    stepSize: Sequelize.STRING,
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE
 })

@@ -60,6 +60,14 @@ async function updateSymbol(symbol, newSymbol) {
         currentSymbol.quote = newSymbol.quote;
     }
 
+    if (newSymbol.tickSize && currentSymbol.tickSize !== newSymbol.tickSize) {
+        currentSymbol.tickSize = newSymbol.tickSize;
+    }
+
+    if (newSymbol.stepSize && currentSymbol.stepSize !== newSymbol.stepSize) {
+        currentSymbol.stepSize = newSymbol.stepSize;
+    }
+
     await currentSymbol.save();
 }
 

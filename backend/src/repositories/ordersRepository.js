@@ -1,5 +1,6 @@
 const orderModel = require('../models/orderModel');
 const Sequelize = require('sequelize');
+const automationModel = require('../models/automationModel');
 
 const PAGE_SIZE = 10;
 
@@ -33,6 +34,8 @@ function getOrders(symbol, page = 1) {
         }
     }
 
+    options.include = automationModel;
+
     return orderModel.findAndCountAll(options);
 }
 
@@ -41,7 +44,7 @@ function getOrderById(id) {
 }
 
 function getOrder(orderId, clientOrderId) {
-    return orderModel.findOne({ where: { orderId, clientOrderId } });
+    return orderModel.findOne({ where: { orderId, clientOrderId }, iclude: automationModel });
 }
 
 async function updateOrderById(id, newOrder) {
