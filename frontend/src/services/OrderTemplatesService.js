@@ -12,6 +12,20 @@ export async function getOrderTemplates(symbol, page, token) {
 
 export async function saveOrderTemplate(id, newOrderTemplate, token) {
     const headers = { 'authorization': token }
+    const regex = /^(\d+([,.]\d+)?)$/;
+
+    if (typeof newOrderTemplate.quantityMultiplier === 'string' && regex.test(newOrderTemplate.quantityMultiplier))
+        newOrderTemplate.quantityMultiplier = parseFloat(newOrderTemplate.quantityMultiplier.replace(',', '.'));
+
+    if (typeof newOrderTemplate.icebergQtyMultiplier === 'string' && regex.test(newOrderTemplate.icebergQtyMultiplier))
+        newOrderTemplate.icebergQtyMultiplier = parseFloat(newOrderTemplate.icebergQtyMultiplier.replace(',', '.'));
+
+    if (typeof newOrderTemplate.limitPriceMultiplier === 'string' && regex.test(newOrderTemplate.limitPriceMultiplier))
+        newOrderTemplate.limitPriceMultiplier = parseFloat(newOrderTemplate.limitPriceMultiplier.replace(',', '.'));
+
+    if (typeof newOrderTemplate.stopPriceMultiplier === 'string' && regex.test(newOrderTemplate.stopPriceMultiplier))
+        newOrderTemplate.stopPriceMultiplier = parseFloat(newOrderTemplate.stopPriceMultiplier.replace(',', '.'));
+
     let response;
     if (id)
         response = await axios.patch(`${ORDER_TEMPLATES_URL}${id}`, newOrderTemplate, { headers });

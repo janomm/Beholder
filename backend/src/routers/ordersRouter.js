@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ordersController = require('../controllers/ordersController.js');
 
+router.get('/last?', ordersController.getLastOrders);
+
 router.get('/:symbol?', ordersController.getOrders);
 
 router.post('/:id/sync', ordersController.syncOrder);

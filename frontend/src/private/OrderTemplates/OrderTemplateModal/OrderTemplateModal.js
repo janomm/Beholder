@@ -37,9 +37,7 @@ function OrderTemplateModal(props) {
     const btnSave = useRef('');
 
     function onSubmit(event) {
-        event.preventDefault();
         const token = localStorage.getItem('token');
-        //console.log(orderTemplate);
         saveOrderTemplate(orderTemplate.id, orderTemplate, token)
             .then(result => {
                 btnClose.current.click();
@@ -49,6 +47,7 @@ function OrderTemplateModal(props) {
                 console.error(err.response ? err.response.data : err.message)
                 setError(err.response ? err.response.data : err.message)
             });
+        //console.log(orderTemplate)
     }
 
     function onInputChange(event) {
@@ -61,7 +60,7 @@ function OrderTemplateModal(props) {
 
         getIndexes(token)
             .then(indexes => {
-                const indexesRegex = /^(BOOK|LAST_CANDLE|LAST_ORDER)/;
+                const indexesRegex = /^(BOOK|LAST_CANDLE|LAST_ORDER.(avgPrice|stopPrice|limitPrice))/;
                 const filteredIndexes = indexes.filter(k => k.symbol === orderTemplate.symbol && indexesRegex.test(k.variable));
                 setIndexes(filteredIndexes)
             }).catch(err => {
@@ -89,7 +88,7 @@ function OrderTemplateModal(props) {
 
     return (
         <div className="modal fade" id="modalOrderTemplate" tabIndex="-1" role="dialog" aria-labelledby="modalTitleNotify" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
                         <p className="modal-title" id="modalTitleNotify">{orderTemplate.id ? 'Edit' : 'New'} Order Template</p>
@@ -98,12 +97,14 @@ function OrderTemplateModal(props) {
                     <div className="modal-body">
                         <div className='form-group'>
                             <div className='row'>
-                                <div className='col-md-6 mb-3'>
+                                <div className='col-md-4 mb-3'>
                                     <div className='form-group'>
                                         <label htmlFor='symbol'>Symbol</label>
-                                        <SelectSymbol symbol={orderTemplate.symbol} onChange={onInputChange} onlyFavorites={false} />
+                                        <SelectSymbol symbol={orderTemplate.symbol} onChange={onInputChange} onlyFavorites={false} disabled={orderTemplate.id > 0} />
                                     </div>
                                 </div>
+                                <div className='col-md-4 mb-3'><SelectSide side={orderTemplate.side} onChange={onInputChange} /></div>
+                                <div className="col-md-4 mb-3"><OrderType type={orderTemplate.type} onChange={onInputChange} /></div>
                             </div>
                             <div className='row'>
                                 <div className='col-12 mb-3'>
@@ -112,10 +113,6 @@ function OrderTemplateModal(props) {
                                         <input type='text' className='form-control' id='name' placeholder="My Template Name" defaultValue={orderTemplate.name} onChange={onInputChange} />
                                     </div>
                                 </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col-md-6 mb-3'><SelectSide side={orderTemplate.side} onChange={onInputChange} /></div>
-                                <div className="col-md-6 mb-3"><OrderType type={orderTemplate.type} onChange={onInputChange} /></div>
                             </div>
                             <div className='row'>
                                 <div className={getPriceClasses(orderTemplate.type)}>
@@ -127,7 +124,7 @@ function OrderTemplateModal(props) {
                             </div>
                             <div className='row'>
                                 <div className='col-md-6 mb-3'>
-                                    <QuantityTemplate id="quantity" text="Quantity:" quantity={orderTemplate.quantity} multiplier={orderTemplate.multiplier} onChange={onInputChange} />
+                                    <QuantityTemplate id="quantity" text="Quantity:" quantity={orderTemplate.quantity} multiplier={orderTemplate.quantityMultiplier} onChange={onInputChange} />
                                 </div>
                                 <div className={getIcebergClasses(orderTemplate.type)}>
                                     <QuantityTemplate id="icebergQty" text="Iceberg Qty:" quantity={orderTemplate.icebergQty} multiplier={orderTemplate.icebergQtyMultiplier} onChange={onInputChange} />

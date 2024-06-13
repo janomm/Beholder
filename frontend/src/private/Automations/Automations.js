@@ -126,9 +126,9 @@ function Automations() {
                         </thead>
                         <tbody>
                             {
-                                automations.map(automation => (
-                                    <AutomationRow key={automation.id} data={automation} onEditClick={onEditAutomationClick} onStartClick={onStartAutomationClick} onStopClick={onStopAutomationClick} onDeleteClick={onDeleteAutomationClick} />
-                                ))
+                                automations && automations.length
+                                    ? automations.map(automation => (<AutomationRow key={automation.id} data={automation} onEditClick={onEditAutomationClick} onStartClick={onStartAutomationClick} onStopClick={onStopAutomationClick} onDeleteClick={onDeleteAutomationClick} />))
+                                    : <React.Fragment />
                             }
                         </tbody>
                     </table>

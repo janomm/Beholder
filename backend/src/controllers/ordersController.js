@@ -1,3 +1,4 @@
+const { or } = require('sequelize');
 const ordersRepository = require('../repositories/ordersRepository');
 const settingsRepository = require('../repositories/settingsRepository');
 
@@ -7,7 +8,11 @@ async function getOrders(req, res, next) {
     const orders = await ordersRepository.getOrders(symbol, page || 1);
 
     res.json(orders);
+}
 
+async function getLastOrders(req, res, next) {
+    const orders = await ordersRepository.getLastFilledOrders();
+    res.json(orders);
 }
 
 async function placeOrder(req, res, next) {
@@ -28,7 +33,7 @@ async function placeOrder(req, res, next) {
         return res.status(400).json(err.body);
     }
 
-    const order = await ordersRepository.insetOrder({
+    const order = await ordersRepository.insertOrder({
         automationId,
         symbol,
         quantity,
@@ -112,5 +117,6 @@ module.exports = {
     getOrders,
     placeOrder,
     cancelOrder,
-    syncOrder
+    syncOrder,
+    getLastOrders
 }

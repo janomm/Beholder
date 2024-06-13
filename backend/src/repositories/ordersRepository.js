@@ -12,7 +12,10 @@ const orderStatus = {
     NEW: 'NEW'
 }
 
-function insetOrder(newOrder) {
+const STOP_TYPES = ["STOP_LOSS", "STOP_LOSS_LIMIT", "TAKE_PROFIT", "TAKE_PROFIT_LIMIT"];
+const LIMIT_TYPES = ["LIMIT", "STOP_LOSS_LIMIT", "TAKE_PROFIT_LIMIT"];
+
+function insertOrder(newOrder) {
     return orderModel.create(newOrder);
 }
 
@@ -59,6 +62,18 @@ async function updateOrderByOrderId(orderId, clientOrderId, newOrder) {
     return updateOrder(order, newOrder);
 }
 
+async function getLastFilledOrders() {
+    const idObjects = await orderModel.findAll({
+        where: { status: 'FILLED' },
+        group: 'symbol',
+        attributes: [Sequelize.fn('max', Sequelize.col('id'))],
+        raw: true
+    });
+    const ids = idObjects.map(o => Object.values(o)).flat();
+
+    return orderModel.findAll({ where: { id: ids } })
+}
+
 async function updateOrder(currentOrder, newOrder) {
     if (!currentOrder || !newOrder) return false;
 
@@ -90,12 +105,15 @@ async function updateOrder(currentOrder, newOrder) {
 }
 
 module.exports = {
-    insetOrder,
+    insertOrder,
     getOrderById,
     getOrder,
     updateOrderById,
     updateOrderByOrderId,
     updateOrder,
     getOrders,
-    orderStatus
+    orderStatus,
+    getLastFilledOrders,
+    STOP_TYPES,
+    LIMIT_TYPES
 }

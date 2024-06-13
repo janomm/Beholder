@@ -48,7 +48,8 @@ function SelectSymbol(props) {
 
     useEffect(() => {
         selectRef.current.value = props.symbol;
-    }, [props.symbol])
+        selectRef.current.disabled = props.disabled;
+    }, [props.symbol, props.disabled])
 
     function onFavoriteClick() {
         return setOnlyFavorites(!onlyFavorites);

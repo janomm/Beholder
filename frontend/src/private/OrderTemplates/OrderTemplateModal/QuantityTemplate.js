@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 /***
  * props:
@@ -10,7 +10,7 @@ import React, { useRef, useEffect } from "react";
  */
 function QuantityTemplate(props) {
 
-    const quantityRef = useRef('');
+    const [quantityTemplate, setQuantityTemplate] = useState({ quantity: '', multiplier: '' });
 
     function onQuantityChange(event) {
         let value = event.target.value;
@@ -18,30 +18,37 @@ function QuantityTemplate(props) {
             value = 'MAX_WALLET';
         else if (value === 'Min. Notional')
             value = 'MIN_NOTIONAL';
+        else if (value === 'Last Order Qty')
+            value = 'LAST_ORDER_QTY';
         props.onChange({ target: { id: props.id, value } });
     }
 
     useEffect(() => {
         if (props.quantity === null || props.quantity === undefined) return;
 
+        let qty = props.quantity;
+
         if (props.quantity === 'MAX_WALLET')
-            quantityRef.current.value = 'Max. Wallet';
+            qty = 'Max. Wallet';
         else if (props.quantity === 'MIN_NOTIONAL')
-            quantityRef.current.value = 'Min. Notional';
-        else quantityRef.current.value = props.quantity;
+            qty = 'Min. Notional';
+        else if (props.quantity === 'LAST_ORDER_QTY')
+            qty = 'Last Order Qty';
 
+        setQuantityTemplate({ quantity: qty, multiplier: props.multiplier });
 
-    }, [props.quantity])
+    }, [props.quantity, props.multiplier])
 
     return (
         <React.Fragment>
             <div className="form-group">
                 <label htmlFor={props.id}>{props.text} <span data-bs-toggle="tooltip" data-bs-placement="top" title="Max. Wallet trades the maximum you have. Min. Notional trades the minimum allowed. Multiplying by 1 = 100%." className="badge bg-warning py-1">?</span></label>
                 <div className="input-group">
-                    <input type="text" ref={quantityRef} id={props.id} list="qtyOptons" className="form-control w-50" onChange={onQuantityChange} placeholder="0"></input>
+                    <input type="text" id={props.id} list="qtyOptons" className="form-control w-50" onChange={onQuantityChange} placeholder="0" defaultValue={quantityTemplate.quantity}></input>
                     <span className="input-group-text bg-secondary">X</span>
-                    <input type="text" id={props.id + 'Multiplier'} className="form-control" onChange={props.onChange} placeholder="1" defaultValue={props.multiplier} />
+                    <input type="number" id={props.id + 'Multiplier'} className="form-control" onChange={props.onChange} placeholder="1" defaultValue={quantityTemplate.multiplier} />
                     <datalist id="qtyOptons">
+                        <option>Last Order Qty</option>
                         <option>Max. Wallet</option>
                         <option>Min. Notional</option>
                     </datalist>

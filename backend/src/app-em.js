@@ -2,6 +2,7 @@ const ordersRepository = require('./repositories/ordersRepository')
 const { orderStatus } = require('./repositories/ordersRepository');
 const { getActiveMonitor, monitorTypes } = require('./repositories/monitorsRepository');
 const { execCalc, indexKeys } = require('./utils/indexes');
+const { or } = require('sequelize');
 
 let WSS, beholder, exchange;
 
@@ -93,6 +94,17 @@ async function loadWallet() {
     return null;
 }
 
+function notifyOrderUpdate(order) {
+    let type = '';
+    switch (order.status) {
+        case 'FILLED': type = 'success'; break;
+        case 'REJECTED':
+        case 'EXPIRED': type = 'error'; break;
+        default: type = 'info'; break;
+    }
+    WSS.broadcast({ notification: { type, text: `Order #${order.orderId} was updated as ${order.status}.` } });
+}
+
 function processExecutionData(executionData, broadcastLabel) {
     if (executionData.x === orderStatus.NEW) return;//ignora as novas, pois podem ter vindo de outras fontes
 
@@ -120,12 +132,17 @@ function processExecutionData(executionData, broadcastLabel) {
 
     setTimeout(async () => {
         try {
-            const order = await ordersRepository.updateOrderByOrderId(order.orderId, order.clientOrderId, order)
-            if (order) {
-                const results = await beholder.updateMemory(order.symbol, indexKeys.LAST_ORDER, null, order);
+            const updatedOrder = await ordersRepository.updateOrderByOrderId(order.orderId, order.clientOrderId, order)
+            if (updatedOrder) {
+
+                notifyOrderUpdate(order);
+
+                const orderCopy = getLightOrder(updatedOrder.get({ plain: true }));
+
+                const results = await beholder.updateMemory(updatedOrder, indexKeys.LAST_ORDER, null, orderCopy);
                 if (results) results.map(r => WSS.broadcast({ notification: r }));
                 if (broadcastLabel && WSS)
-                    WSS.broadcast({ [broadcastLabel]: order })
+                    WSS.broadcast({ [broadcastLabel]: orderCopy });
             }
         }
         catch (err) {
@@ -270,6 +287,28 @@ function startTickerMonitor(symbol, broadcastLabel, logs) {
 
 }
 
+function getLightOrder(order) {
+    const orderCopy = { ...order };
+    delete orderCopy.id;
+    delete orderCopy.automationId;
+    delete orderCopy.orderId;
+    delete orderCopy.clientOrderId;
+    delete orderCopy.transactTime;
+    delete orderCopy.isMaker;
+    delete orderCopy.comission;
+    delete orderCopy.obs;
+    delete orderCopy.Automation;
+    delete orderCopy.createdAt;
+    delete orderCopy.updatedAt;
+    orderCopy.limitPrice = parseFloat(orderCopy.limitPrice);
+    orderCopy.stopPrice = parseFloat(orderCopy.stopPrice);
+    orderCopy.avgPrice = parseFloat(orderCopy.avgPrice);
+    orderCopy.netPrice = parseFloat(orderCopy.netPrice);
+    orderCopy.quantity = parseFloat(orderCopy.quantity);
+    orderCopy.icebergQuantity = parseFloat(orderCopy.icebergQuantity);
+    return orderCopy;
+}
+
 async function init(settings, wssInstance, beholderInstance) {
     if (!settings || !beholderInstance) throw new Error(`Can't start Exchange Monitor without settings and/or Beholder.`);
 
@@ -296,6 +335,13 @@ async function init(settings, wssInstance, beholderInstance) {
             }
         }, 250)
     })
+
+    const lastOrders = await ordersRepository.getLastFilledOrders();
+    lastOrders.map(async order => {
+        const orderCopy = getLightOrder(order.get({ plain: true }));
+        await beholder.updateMemory(order.symbol, indexKeys.LAST_ORDER, null, orderCopy, false);
+    })
+
     console.log(`App Exchange Monitor is running!`);
 }
 
