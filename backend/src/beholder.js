@@ -132,9 +132,10 @@ function calcPrice(orderTemplate, symbol, isStopPrice) {
     }
     else {
         const memory = MEMORY[`${orderTemplate.symbol}:BOOK`];
-        if (!memory)
+        if (!memory) {
+            console.log(`${orderTemplate.symbol}:BOOK`, memory);
             throw new Error(`Error trying to get market price. OTID: ${orderTemplate.id}, ${isStopPrice}. No Book.`);
-
+        }
         newPrice = orderTemplate.side === 'BUY' ? memory.current.bestAsk : memory.current.bestBid;
         newPrice = isStopPrice ? newPrice * orderTemplate.stopPriceMultiplier : newPrice * orderTemplate.limitPriceMultiplier;
     }
@@ -249,9 +250,9 @@ async function placeOrder(settings, automation, action) {
     let result;
     const exchange = require('./utils/exchange')(settings);
 
-    console.log('----------------------------')
+    /*console.log('----------------------------')
     console.log(order);
-    console.log('----------------------------')
+    console.log('----------------------------')*/
 
     try {
         if (order.side === 'BUY')
@@ -261,7 +262,7 @@ async function placeOrder(settings, automation, action) {
     }
     catch (err) {
         console.error(err.body ? err.body : err);
-        console.log(order);
+        //console.log(order);
         return { type: 'error', text: `Order failed! ` + err.body ? err.body : err.message };
     }
 
