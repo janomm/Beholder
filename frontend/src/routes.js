@@ -7,6 +7,7 @@ import Orders from './private/Orders/Orders';
 import Monitors from './private/Monitors/Monitors';
 import Automations from './private/Automations/Automations';
 import OrderTemplates from './private/OrderTemplates/OrderTemplates';
+import Reports from './private/Reports/Reports';
 
 function Routes() {
 
@@ -45,6 +46,9 @@ function Routes() {
             </PrivateRoute>
             <PrivateRoute path="/orders/:symbol?">
                 <Orders />
+            </PrivateRoute>
+            <PrivateRoute path="/reports/:symbol?">
+                <Reports />
             </PrivateRoute>
         </BrowserRouter>
     )

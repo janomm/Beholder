@@ -15,6 +15,22 @@ const orderStatus = {
 const STOP_TYPES = ["STOP_LOSS", "STOP_LOSS_LIMIT", "TAKE_PROFIT", "TAKE_PROFIT_LIMIT"];
 const LIMIT_TYPES = ["LIMIT", "STOP_LOSS_LIMIT", "TAKE_PROFIT_LIMIT"];
 
+function getReportOrders(quoteAsset, startDate, endDate) {
+    startDate = startDate ? startDate : 0;
+    endDate = endDate ? endDate : Date.now();
+    return orderModel.findAll({
+        where: {
+            symbol: { [Sequelize.Op.like]: `%${quoteAsset}` },
+            transactTime: { [Sequelize.Op.between]: [startDate, endDate] },
+            status: 'FILLED',
+            net: { [Sequelize.Op.gt]: 0 }
+        },
+        order: [['transactTime', 'ASC']],
+        include: automationModel,
+        raw: true
+    })
+}
+
 function insertOrder(newOrder) {
     return orderModel.create(newOrder);
 }
@@ -115,5 +131,6 @@ module.exports = {
     orderStatus,
     getLastFilledOrders,
     STOP_TYPES,
-    LIMIT_TYPES
+    LIMIT_TYPES,
+    getReportOrders
 }

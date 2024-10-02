@@ -5,6 +5,7 @@ const DEFAULT_QUOTE_PROPERTY = "defaultQuote";
 /**
  * props:
  * - onChange
+ * - noFavorites
  * 
  */
 function SelectQuote(props) {
@@ -12,7 +13,11 @@ function SelectQuote(props) {
 
     return (
         <select id="selectQuote" className="form-select" defaultValue={defautQuote} onChange={props.onChange}>
-            <option value="FAVORITES">Favorites</option>
+            {
+                props.noFavorites
+                    ? <React.Fragment />
+                    : (<option value="FAVORITES">Favorites</option>)
+            }
             <option value="BNB">BNB</option>
             <option value="BRL">BRL</option>
             <option value="BTC">BTC</option>
