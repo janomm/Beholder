@@ -479,6 +479,37 @@ function getMemoryIndexes() {
         })
 }
 
+const STABLE_COINS = ['USD', 'USDT', 'USDC', 'BUSD'];
+
+function getStableConversion(baseAsset, quoteAsset, baseQty) {
+    if (STABLE_COINS.includes(baseAsset)) return baseQty;
+
+    let book = getMemory(baseAsset + quoteAsset, 'BOOK', null);
+    if (book) return parseFloat(baseQty) * book.current.bestBid;
+    return 0;
+}
+
+const FIAT_COINS = ['BRL', 'EUR', 'GBP'];
+
+function getFiatConverse(stableCoin, fiatCoin, fiatQty) {
+    let book = getMemory(stableCoin + fiatCoin, 'BOOK', null);
+    if (book) return parseFloat(fiatQty) / book.current.bestBid;
+    return 0;
+}
+
+function tryUSDConversion(baseAsset, baseQty) {
+    if (STABLE_COINS.includes(baseAsset)) return baseQty;
+    if (FIAT_COINS.includes(baseAsset)) return getFiatConverse('USDT', baseAsset, baseQty);
+
+    for (let i = 0; i < STABLE_COINS.length; i++) {
+        const converted = getStableConversion(baseAsset, STABLE_COINS[i], baseQty);
+        if (converted > 0) return converted;
+    }
+
+    return 0;
+
+}
+
 module.exports = {
     updateMemory,
     getMemory,
@@ -490,5 +521,6 @@ module.exports = {
     updateBrain,
     deleteBrain,
     findAutomations,
-    placeOrder
+    placeOrder,
+    tryUSDConversion
 }

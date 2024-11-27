@@ -3,7 +3,7 @@ import Menu from '../../components/Menu/Menu';
 import SelectQuote, { getDefaultQuote } from '../../components/selectQuote/SelectQuote';
 import DateFilter from '../../components/DateFilter/DateFilter';
 import LineChart from './LineChart';
-import { getOrdersReport } from '../../services/OrdersService';
+import { getOrdersReport, getDayTradeReport } from '../../services/OrdersService';
 import Toast from '../../components/Toast/Toast';
 import InfoBlock from '../../components/InfoBlock/InfoBlock';
 import Wallet from '../Dashboard/Wallet/Wallet';
@@ -35,12 +35,20 @@ function Reports() {
         if (!filter || !filter.symbol) return setFilter({ symbol: getDefaultQuote() });
 
         const token = localStorage.getItem('token');
-        getOrdersReport(filter.symbol, filter.starDate, filter.endDate, token)
+
+        let promise;
+        if(filter.starDate && filter.starDate.getTime() === filter.endDate.getTime())
+            promise = getDayTradeReport(filter.symbol,filter.starDate, token);
+        else 
+            promise = getOrdersReport(filter.symbol, filter.starDate, filter.endDate, token);
+        
+        promise
             .then(result => setReport(result))
             .catch(err => {
                 console.error(err.response ? err.response.data : err.message);
                 setNotification({ type: 'error', text: err.response ? err.response.data : err.message });
-            })
+            });
+
     }, [filter])
 
     return (

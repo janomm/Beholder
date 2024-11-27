@@ -56,11 +56,27 @@ function getToday() {
     return date.getTime();
 }
 
+function getStartToday() {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+}
+
 export async function getOrdersReport(symbol, startDate, endDate, token) {
     startDate = startDate ? startDate.getTime() : thirtyDaysAgo();
     endDate = endDate ? endDate.getTime() : getToday();
 
     const reportUrl = `${ORDERS_URL}reports/${symbol}?startDate=${startDate}&endDate=${endDate}`;
+    //const reportUrl = `${ORDERS_URL}reports/UDST`;
+    const headers = { 'authorization': token }
+    const response = await axios.get(reportUrl, { headers })
+    return response.data;
+}
+
+export async function getDayTradeReport(symbol, date, token) {
+    date = date ? date.getTime() : getStartToday();
+
+    const reportUrl = `${ORDERS_URL}reports/${symbol}?date=${date}`;
     //const reportUrl = `${ORDERS_URL}reports/UDST`;
     const headers = { 'authorization': token }
     const response = await axios.get(reportUrl, { headers })
